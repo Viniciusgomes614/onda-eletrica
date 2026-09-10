@@ -60,17 +60,11 @@
 <body>
 <div id="root"></div>
 
-<!-- Firebase (SDK modular via CDN, usando importação dinâmica) -->
-<script>
-(async function () {
-  const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
-  const {
-    getAuth, signInAnonymously, onAuthStateChanged
-  } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
-  const {
-    getFirestore, collection, addDoc, updateDoc, doc, setDoc, getDoc,
-    onSnapshot, query, orderBy, limit, serverTimestamp, Timestamp
-  } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+<!-- Firebase (Voltou para o formato limpo, ele nunca foi o culpado) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, collection, addDoc, updateDoc, doc, setDoc, getDoc, onSnapshot, query, orderBy, limit, serverTimestamp, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCGaXoU3iXHgR2uX31bIuE43CFGkY4YaRc",
@@ -92,15 +86,19 @@
     onSnapshot, query, orderBy, limit, serverTimestamp, Timestamp
   };
   window.dispatchEvent(new Event("fb-ready"));
-})();
 </script>
 
 <!-- React sem build (UMD) -->
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<!-- FIX 1: Versão do Babel travada para estabilidade -->
+<script src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"></script>
 
 <script type="text/babel" data-presets="react">
+/* FIX 2: Força o formato clássico para que o Babel não injete imports fantasmas */
+/** @jsx React.createElement */
+/** @jsxFrag React.Fragment */
+
 const { useState, useEffect, useRef, useMemo, useCallback } = React;
 
 function fmtHMS(totalSeconds){
