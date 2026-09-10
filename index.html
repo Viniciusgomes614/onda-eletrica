@@ -62,15 +62,20 @@
 <div id="root"></div>
 
 <!-- Firebase (SDK modular via CDN, sem instalar nada) -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import {
+<!-- Observação: usamos import() dinâmico dentro de um script comum (sem
+     type="module") de propósito, pra não conflitar com o Babel do React
+     logo abaixo, que roda no navegador e não sabe lidar com scripts do
+     tipo "module". -->
+<script>
+(async function () {
+  const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+  const {
     getAuth, signInAnonymously, onAuthStateChanged
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import {
+  } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
+  const {
     getFirestore, collection, addDoc, updateDoc, doc, setDoc, getDoc,
     onSnapshot, query, orderBy, limit, serverTimestamp, Timestamp
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
 
   // >>> COLE AQUI A CONFIGURAÇÃO DO SEU PROJETO FIREBASE <<<
   const firebaseConfig = {
@@ -93,6 +98,7 @@
     onSnapshot, query, orderBy, limit, serverTimestamp, Timestamp
   };
   window.dispatchEvent(new Event("fb-ready"));
+})();
 </script>
 
 <!-- React sem build (UMD) -->
