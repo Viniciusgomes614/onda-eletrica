@@ -61,11 +61,7 @@
 <body>
 <div id="root"></div>
 
-<!-- Firebase (SDK modular via CDN, sem instalar nada) -->
-<!-- Observação: usamos import() dinâmico dentro de um script comum (sem
-     type="module") de propósito, pra não conflitar com o Babel do React
-     logo abaixo, que roda no navegador e não sabe lidar com scripts do
-     tipo "module". -->
+<!-- Firebase (SDK modular via CDN, usando importação dinâmica para evitar conflito com Babel) -->
 <script>
 (async function () {
   const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
@@ -77,15 +73,14 @@
     onSnapshot, query, orderBy, limit, serverTimestamp, Timestamp
   } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
 
-  // >>> COLE AQUI A CONFIGURAÇÃO DO SEU PROJETO FIREBASE <<<
   const firebaseConfig = {
-  apiKey: "AIzaSyCGaXoU3iXHgR2uX31bIuE43CFGkY4YaRc",
-  authDomain: "ponto-onda-eletrica.firebaseapp.com",
-  projectId: "ponto-onda-eletrica",
-  storageBucket: "ponto-onda-eletrica.firebasestorage.app",
-  messagingSenderId: "276041404701",
-  appId: "1:276041404701:web:35951f8f473c2c182b91f4"
-};
+    apiKey: "AIzaSyCGaXoU3iXHgR2uX31bIuE43CFGkY4YaRc",
+    authDomain: "ponto-onda-eletrica.firebaseapp.com",
+    projectId: "ponto-onda-eletrica",
+    storageBucket: "ponto-onda-eletrica.firebasestorage.app",
+    messagingSenderId: "276041404701",
+    appId: "1:276041404701:web:35951f8f473c2c182b91f4"
+  };
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
