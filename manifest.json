@@ -1,0 +1,11 @@
+{
+  "name": "Onda Elétrica",
+  "short_name": "Onda Elétrica",
+  "description": "Controle de horas e mural em tempo real da equipe Onda Elétrica",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0F1B2D",
+  "theme_color": "#0F1B2D",
+  "orientation": "portrait",
+  "icons": []
+}
