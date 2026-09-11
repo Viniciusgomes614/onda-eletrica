@@ -260,7 +260,6 @@ function PontoTab({ user, users, activeSession, activeGroupCount, elapsed, onSta
   const [showManualModal, setShowManualModal] = useState(false);
   const [showStopModal, setShowStopModal] = useState(false);
   
-  // Novos Estados
   const [isWorking, setIsWorking] = useState(true);
   const [location, setLocation] = useState("Sede");
   const [guests, setGuests] = useState("");
@@ -276,7 +275,6 @@ function PontoTab({ user, users, activeSession, activeGroupCount, elapsed, onSta
 
   const recentSessions = useMemo(() => sessions.filter(s => s.uid === user.uid && s.endTime).slice(0,5), [sessions, user]);
 
-  // Se não estiver trabalhando, trava local na Sede
   const handleSetNotWorking = () => { setIsWorking(false); setLocation("Sede"); };
   const handleSetWorking = () => { setIsWorking(true); };
 
@@ -300,7 +298,6 @@ function PontoTab({ user, users, activeSession, activeGroupCount, elapsed, onSta
   return (
     <div className="fade-in" style={{flex:1, display:"flex", flexDirection:"column", overflow:"hidden"}}>
       
-      {/* ÁREA SUPERIOR FIXA */}
       <div style={{flexShrink:0, display:"flex", flexDirection:"column", alignItems:"center", padding:"24px 20px 16px"}}>
         <div style={{position:"relative", display:"flex", justifyContent:"center", alignItems:"center", marginBottom: "20px"}}>
           <button disabled={busy} onClick={running ? handleStopClick : () => onStart([], isWorking, location, guests)} style={{ width:200, height:200, borderRadius:"50%", border:"none", cursor:"pointer", background: running ? "radial-gradient(circle at 30% 30%, #ff7a4d, var(--warn))" : "radial-gradient(circle at 30% 30%, #ffd35c, var(--accent))", color: running ? "white" : "#1A1300", boxShadow: running ? "0 0 0 12px rgba(228,87,46,0.15)" : "0 0 0 12px rgba(242,183,5,0.15)", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", transition:"all .3s" }}>
@@ -312,21 +309,18 @@ function PontoTab({ user, users, activeSession, activeGroupCount, elapsed, onSta
 
         {!running && (
           <div style={{width: "100%", display: "flex", flexDirection: "column", gap: 10, marginBottom: 12}}>
-            {/* Status Selector */}
             <div style={{display:"flex", gap:8}}>
                <button onClick={handleSetWorking} className={`selector-btn ${isWorking ? "active" : "inactive"}`}>Trabalhando</button>
                <button onClick={handleSetNotWorking} className={`selector-btn ${!isWorking ? "active" : "inactive"}`}>Social / Visitando</button>
             </div>
             
-            {/* Location Selector */}
             <div style={{display:"flex", gap:8}}>
                {["Sede", "Poli", "Casa", "Outro"].map(l => (
                  <button key={l} disabled={!isWorking && l !== "Sede"} onClick={() => setLocation(l)} className={`selector-btn ${location===l ? "active" : "inactive"}`}>{l}</button>
                ))}
             </div>
 
-            {/* Guests */}
-            <input value={guests} onChange={e=>setGuests(e.target.value)} placeholder="+ Adicionar convidados (opcional, digite nomes)" style={{margin:0, fontSize:13.5, padding:"10px 14px"}} />
+            <input value={guests} onChange={e=>setGuests(e.target.value)} placeholder="+ Adicionar convidados (separe por vírgula)" style={{margin:0, fontSize:13.5, padding:"10px 14px"}} />
           </div>
         )}
 
@@ -345,7 +339,6 @@ function PontoTab({ user, users, activeSession, activeGroupCount, elapsed, onSta
         )}
       </div>
 
-      {/* ÁREA INFERIOR SCROLLÁVEL (Histórico) */}
       <div style={{flex:1, overflowY:"auto", padding:"0 20px 24px", width:"100%"}}>
         <div style={{fontSize:13, color:"var(--text-muted)", marginBottom:10}}>Hoje: <span className="mono" style={{color:"var(--text)", fontWeight:600}}>{fmtHM(myTodaySecs + (running?elapsed:0))}</span></div>
         {recentSessions.length === 0 && <div style={{fontSize:13, color:"var(--text-muted)"}}>Nenhum registro recente.</div>}
@@ -403,17 +396,27 @@ function PontoTab({ user, users, activeSession, activeGroupCount, elapsed, onSta
 
 function MuralTab({events, onClear, sessions, users}) {
   
-  // Quem está na sede agora? (Sessão rodando e Location = Sede)
   const pessoasNaSede = sessions.filter(s => s.endTime === null && s.location === "Sede");
   const uidsNaSede = [...new Set(pessoasNaSede.map(s => s.uid))];
+  
+  // Extrai convidados que estão na sede atualmente
+  let convidadosNaSede = [];
+  pessoasNaSede.forEach(s => {
+    if (s.guests && s.guests.trim()) {
+      const list = s.guests.split(',').map(g => g.trim()).filter(g => g.length > 0);
+      convidadosNaSede.push(...list);
+    }
+  });
+  convidadosNaSede = [...new Set(convidadosNaSede)];
+
+  const totalNaSede = uidsNaSede.length + convidadosNaSede.length;
 
   return (
     <div className="fade-in" style={{flex:1, padding:"20px", overflowY:"auto"}}>
       
-      {/* Seção Nova: Quem está na sede */}
-      {uidsNaSede.length > 0 && (
+      {totalNaSede > 0 && (
         <div style={{marginBottom: 24, padding: "16px", background: "var(--surface-2)", borderRadius: 12}}>
-          <h3 style={{fontSize: 14, margin: "0 0 14px", color: "var(--text)", display:"flex", alignItems:"center", gap:6}}><Icons.MapPin/> Na Sede Agora ({uidsNaSede.length})</h3>
+          <h3 style={{fontSize: 14, margin: "0 0 14px", color: "var(--text)", display:"flex", alignItems:"center", gap:6}}><Icons.MapPin/> Na Sede Agora ({totalNaSede})</h3>
           <div style={{display: "flex", gap: 14, overflowX: "auto"}} className="scrollbar-none">
             {uidsNaSede.map(uid => {
                const u = users.find(x => x.uid === uid) || {name: "Alguém"};
@@ -424,6 +427,14 @@ function MuralTab({events, onClear, sessions, users}) {
                  </div>
                )
             })}
+            {convidadosNaSede.map((gName, idx) => (
+               <div key={`guest-${idx}`} style={{display: "flex", flexDirection: "column", alignItems: "center", gap: 6}}>
+                 <div className="avatar" style={{background: "var(--surface)", border: "1.5px dashed var(--text-muted)", color: "var(--text-muted)"}}>
+                   {gName.charAt(0).toUpperCase()}
+                 </div>
+                 <span style={{fontSize: 11, color: "var(--text-muted)", whiteSpace: "nowrap"}} title={gName}>{gName.split(' ')[0]}</span>
+               </div>
+            ))}
           </div>
         </div>
       )}
@@ -488,12 +499,10 @@ function RankingTab({sessions, users, user, activeSession, elapsed}) {
     const map = {};
     users.forEach(u => map[u.uid] = { name: u.name, role: u.role, photo: u.photoBase64, seconds: 0 });
     for(const s of sessions){
-      // Só ranqueia se estiver TRABALHANDO
       if(!s.isWorking) continue;
       if(!s.endTime || new Date(s.startTime) < range.start) continue;
       if(map[s.uid]) map[s.uid].seconds += s.durationSeconds;
     }
-    // Adiciona tempo da sessão ativa SE estiver trabalhando
     if(activeSession && activeSession.isWorking && map[user.uid]) map[user.uid].seconds += elapsed;
     
     return Object.entries(map).map(([uid, v]) => ({ uid, ...v })).sort((a,b) => b.seconds - a.seconds);
@@ -739,7 +748,6 @@ function App() {
     const sessionToDelete = sessions.find(s => s.id === id);
     if(sessionToDelete) {
        await window.fb.deleteDoc(window.fb.doc(window.fb.db, "sessions", id));
-       // Apaga do mural os eventos conectados a essa sessão
        const eventsToDelete = events.filter(e => (e.groupId && e.groupId === sessionToDelete.groupId) || (e.sessionId && e.sessionId === id));
        for(const ev of eventsToDelete) await window.fb.deleteDoc(window.fb.doc(window.fb.db, "events", ev.id));
     }
