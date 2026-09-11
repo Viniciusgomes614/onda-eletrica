@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Onda Elétrica · Ponto</title>
 
+<!-- Comportamento de app ao adicionar à tela de início (Android e iPhone) -->
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -20,10 +21,10 @@
     --surface:#16233A;
     --surface-2:#1D2C47;
     --line: rgba(234,240,246,0.08);
-    --accent:#F2B705;
+    --accent:#F2B705;      /* voltagem / ação principal */
     --accent-soft: rgba(242,183,5,0.14);
-    --live:#3FD8C4;
-    --warn:#E4572E;
+    --live:#3FD8C4;        /* pulso ao vivo */
+    --warn:#E4572E;        /* parar / desligar */
     --text:#EAF0F6;
     --text-muted:#8FA0BC;
   }
@@ -60,11 +61,17 @@
 <body>
 <div id="root"></div>
 
-<!-- Firebase (Voltou para o formato limpo, ele nunca foi o culpado) -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, collection, addDoc, updateDoc, doc, setDoc, getDoc, onSnapshot, query, orderBy, limit, serverTimestamp, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+<!-- Firebase (SDK modular via CDN, usando importação dinâmica para evitar conflito com Babel) -->
+<script>
+(async function () {
+  const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+  const {
+    getAuth, signInAnonymously, onAuthStateChanged
+  } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
+  const {
+    getFirestore, collection, addDoc, updateDoc, doc, setDoc, getDoc,
+    onSnapshot, query, orderBy, limit, serverTimestamp, Timestamp
+  } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
 
   const firebaseConfig = {
     apiKey: "AIzaSyCGaXoU3iXHgR2uX31bIuE43CFGkY4YaRc",
@@ -86,21 +93,18 @@
     onSnapshot, query, orderBy, limit, serverTimestamp, Timestamp
   };
   window.dispatchEvent(new Event("fb-ready"));
+})();
 </script>
 
 <!-- React sem build (UMD) -->
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<!-- FIX 1: Versão do Babel travada para estabilidade -->
-<script src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
 <script type="text/babel" data-presets="react">
-/* FIX 2: Força o formato clássico para que o Babel não injete imports fantasmas */
-/** @jsx React.createElement */
-/** @jsxFrag React.Fragment */
-
 const { useState, useEffect, useRef, useMemo, useCallback } = React;
 
+// ---------- utilidades ----------
 function fmtHMS(totalSeconds){
   const s = Math.max(0, Math.floor(totalSeconds));
   const h = String(Math.floor(s/3600)).padStart(2,"0");
@@ -116,7 +120,7 @@ function fmtHM(totalSeconds){
 }
 function startOfWeek(d){
   const x = new Date(d);
-  const day = x.getDay();
+  const day = x.getDay(); // 0=domingo
   x.setHours(0,0,0,0);
   x.setDate(x.getDate() - day);
   return x;
@@ -127,6 +131,7 @@ function startOfMonth(d){
   return x;
 }
 
+// ---------- onda decorativa (estado ligado/desligado) ----------
 function WaveLine({active, color}){
   return (
     <svg width="100%" height="40" viewBox="0 0 300 40" preserveAspectRatio="none" style={{display:"block"}}>
@@ -142,6 +147,7 @@ function WaveLine({active, color}){
   );
 }
 
+// ---------- tela de login ----------
 function LoginScreen({onEnter, busy}){
   const [name, setName] = useState("");
   return (
@@ -185,6 +191,7 @@ function LoginScreen({onEnter, busy}){
   );
 }
 
+// ---------- cabeçalho ----------
 function Header({user, onLogout}){
   return (
     <div style={{
@@ -203,6 +210,7 @@ function Header({user, onLogout}){
   );
 }
 
+// ---------- aba: ponto ----------
 function PontoTab({user, activeSession, elapsed, onStart, onStop, myTodaySeconds, myTotalSeconds, busy}){
   const running = !!activeSession;
   return (
@@ -248,6 +256,7 @@ function PontoTab({user, activeSession, elapsed, onStart, onStop, myTodaySeconds
   );
 }
 
+// ---------- aba: mural ----------
 function MuralTab({events}){
   return (
     <div className="fade-in" style={{flex:1, padding:"20px 20px 8px", overflowY:"auto"}}>
@@ -283,6 +292,7 @@ function MuralTab({events}){
   );
 }
 
+// ---------- aba: ranking ----------
 function RankingTab({sessions, user, activeSession, elapsed}){
   const [period, setPeriod] = useState("semana");
   const [customStart, setCustomStart] = useState("");
@@ -369,6 +379,7 @@ function RankingTab({sessions, user, activeSession, elapsed}){
   );
 }
 
+// ---------- navegação inferior ----------
 function BottomNav({tab, setTab}){
   const items = [
     { key:"ponto", label:"Ponto" },
@@ -393,6 +404,7 @@ function BottomNav({tab, setTab}){
   );
 }
 
+// ---------- toast de evento ao vivo ----------
 function LiveToast({event}){
   if(!event) return null;
   return (
@@ -406,13 +418,14 @@ function LiveToast({event}){
   );
 }
 
+// ---------- app principal ----------
 function App(){
   const [fbReady, setFbReady] = useState(!!window.fb);
   const [user, setUser] = useState(null);
   const [loginBusy, setLoginBusy] = useState(false);
   const [tab, setTab] = useState("ponto");
 
-  const [activeSession, setActiveSession] = useState(null);
+  const [activeSession, setActiveSession] = useState(null); // {id, startTime}
   const [elapsed, setElapsed] = useState(0);
   const [actionBusy, setActionBusy] = useState(false);
 
@@ -428,6 +441,7 @@ function App(){
     return () => window.removeEventListener("fb-ready", h);
   }, []);
 
+  // restaurar usuário salvo neste aparelho
   useEffect(()=>{
     if(!fbReady) return;
     const saved = localStorage.getItem("onda-user");
@@ -461,6 +475,7 @@ function App(){
     setActiveSession(null);
   }
 
+  // restaurar sessão ativa (se o app foi fechado com o cronômetro rodando)
   useEffect(()=>{
     if(!user) return;
     const saved = localStorage.getItem("onda-active-session");
@@ -470,6 +485,7 @@ function App(){
     }
   }, [user]);
 
+  // cronômetro
   useEffect(()=>{
     if(!activeSession){ setElapsed(0); return; }
     const tick = () => setElapsed(Math.floor((Date.now() - new Date(activeSession.startTime).getTime())/1000));
@@ -478,6 +494,7 @@ function App(){
     return () => clearInterval(id);
   }, [activeSession]);
 
+  // ouvir mural (eventos) em tempo real
   useEffect(()=>{
     if(!fbReady || !user) return;
     const q = window.fb.query(
@@ -507,6 +524,7 @@ function App(){
     return () => unsub();
   }, [fbReady, user]);
 
+  // ouvir sessões (para ranking e totais)
   useEffect(()=>{
     if(!fbReady || !user) return;
     const q = window.fb.query(
