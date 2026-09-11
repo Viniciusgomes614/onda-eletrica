@@ -53,9 +53,10 @@
   .bottom-nav button { flex: 1; padding: 12px 0; background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 11px; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: color 0.2s; }
   .bottom-nav button.active { color: var(--accent); }
   
-  .chat-bubble { padding: 10px 14px; border-radius: 16px; font-size: 14.5px; max-width: 85%; word-wrap: break-word; line-height: 1.4; }
-  .chat-mine { background: var(--accent-soft); border-bottom-right-radius: 4px; align-self: flex-end; }
-  .chat-other { background: var(--surface-2); border-bottom-left-radius: 4px; align-self: flex-start; }
+  .selector-btn { flex: 1; padding: 10px 0; border-radius: 8px; border: 1px solid var(--line); font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .selector-btn.active { background: var(--accent); color: #1A1300; border-color: var(--accent); }
+  .selector-btn.inactive { background: var(--surface); color: var(--text-muted); }
+  .selector-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 </style>
 </head>
 <body>
@@ -151,14 +152,13 @@ const Icons = {
   Clock: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>,
   List: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>,
   Trophy: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10"/><path d="M17 4v8a5 5 0 0 1-10 0V4"/><path d="M7 9H5a2 2 0 0 1 0-4h2"/><path d="M17 9h2a2 2 0 0 0 0-4h-2"/></svg>,
-  Chat: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>,
   Users: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>,
   Trash: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>,
   Sun: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>,
   Moon: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>,
   Google: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>,
-  Send: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>,
-  Download: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+  Download: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>,
+  MapPin: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
 };
 
 const Avatar = ({ user, size="md" }) => {
@@ -182,15 +182,12 @@ function Modal({ title, onClose, children }) {
   );
 }
 
-// ATUALIZADO: Agora recebe o installPrompt para mostrar o botão de instalar o PWA
 function LoginGoogleScreen({ onLogin, busy, installPrompt }) {
   const handleInstall = async () => {
     if (!installPrompt) return;
     installPrompt.prompt();
     const { outcome } = await installPrompt.userChoice;
-    if (outcome === 'accepted') {
-      console.log('App instalado com sucesso');
-    }
+    if (outcome === 'accepted') console.log('App instalado com sucesso');
   };
 
   return (
@@ -205,7 +202,6 @@ function LoginGoogleScreen({ onLogin, busy, installPrompt }) {
         <Icons.Google /> {busy ? "Verificando..." : "Entrar com o Google"}
       </button>
 
-      {/* Botão de instalação do PWA aparece se o navegador permitir */}
       {installPrompt && (
         <button className="btn fade-in" onClick={handleInstall} style={{marginTop: 16, background: "var(--surface)", border: "1px solid var(--accent)", color: "var(--text)"}}>
           <Icons.Download /> Instalar Aplicativo
@@ -264,6 +260,11 @@ function PontoTab({ user, users, activeSession, activeGroupCount, elapsed, onSta
   const [showManualModal, setShowManualModal] = useState(false);
   const [showStopModal, setShowStopModal] = useState(false);
   
+  // Novos Estados
+  const [isWorking, setIsWorking] = useState(true);
+  const [location, setLocation] = useState("Sede");
+  const [guests, setGuests] = useState("");
+  
   const [selectedGroup, setSelectedGroup] = useState([]);
   const [mStart, setMStart] = useState("");
   const [mEnd, setMEnd] = useState("");
@@ -275,7 +276,11 @@ function PontoTab({ user, users, activeSession, activeGroupCount, elapsed, onSta
 
   const recentSessions = useMemo(() => sessions.filter(s => s.uid === user.uid && s.endTime).slice(0,5), [sessions, user]);
 
-  const handleStartGroup = () => { onStart(selectedGroup); setShowGroupModal(false); };
+  // Se não estiver trabalhando, trava local na Sede
+  const handleSetNotWorking = () => { setIsWorking(false); setLocation("Sede"); };
+  const handleSetWorking = () => { setIsWorking(true); };
+
+  const handleStartGroup = () => { onStart(selectedGroup, isWorking, location, guests); setShowGroupModal(false); };
   
   const handleStopClick = () => {
     if (activeGroupCount > 0) setShowStopModal(true);
@@ -289,26 +294,59 @@ function PontoTab({ user, users, activeSession, activeGroupCount, elapsed, onSta
     onManualAdd(new Date(sTime).toISOString(), new Date(eTime).toISOString(), Math.floor((eTime-sTime)/1000));
     setShowManualModal(false);
   };
-  const askDelete = (id) => { if(window.confirm("Deseja apagar essa sessão?")) onDeleteSession(id); };
+
+  const askDelete = (id) => { if(window.confirm("Deseja apagar essa sessão? Ela também sumirá do Mural.")) onDeleteSession(id); };
 
   return (
-    <div className="fade-in" style={{flex:1, display:"flex", flexDirection:"column", alignItems:"center", padding:"24px 20px", overflowY:"auto"}}>
-      <div style={{position:"relative", display:"flex", justifyContent:"center", alignItems:"center", margin:"20px 0 40px"}}>
-        <button disabled={busy} onClick={running ? handleStopClick : () => onStart([])} style={{ width:200, height:200, borderRadius:"50%", border:"none", cursor:"pointer", background: running ? "radial-gradient(circle at 30% 30%, #ff7a4d, var(--warn))" : "radial-gradient(circle at 30% 30%, #ffd35c, var(--accent))", color: running ? "white" : "#1A1300", boxShadow: running ? "0 0 0 12px rgba(228,87,46,0.15)" : "0 0 0 12px rgba(242,183,5,0.15)", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", transition:"all .3s" }}>
-          <div className="mono" style={{fontSize:36, fontWeight:700, letterSpacing:1}}>{fmtHMS(elapsed)}</div>
-          <div style={{fontSize:14, fontWeight:600, opacity:0.8, marginTop:4}}>{running ? "PARAR" : "INICIAR"}</div>
-          {running && activeGroupCount > 0 && <div style={{fontSize:12, opacity:0.9, marginTop:8}}>Você + {activeGroupCount} pessoa(s)</div>}
-        </button>
+    <div className="fade-in" style={{flex:1, display:"flex", flexDirection:"column", overflow:"hidden"}}>
+      
+      {/* ÁREA SUPERIOR FIXA */}
+      <div style={{flexShrink:0, display:"flex", flexDirection:"column", alignItems:"center", padding:"24px 20px 16px"}}>
+        <div style={{position:"relative", display:"flex", justifyContent:"center", alignItems:"center", marginBottom: "20px"}}>
+          <button disabled={busy} onClick={running ? handleStopClick : () => onStart([], isWorking, location, guests)} style={{ width:200, height:200, borderRadius:"50%", border:"none", cursor:"pointer", background: running ? "radial-gradient(circle at 30% 30%, #ff7a4d, var(--warn))" : "radial-gradient(circle at 30% 30%, #ffd35c, var(--accent))", color: running ? "white" : "#1A1300", boxShadow: running ? "0 0 0 12px rgba(228,87,46,0.15)" : "0 0 0 12px rgba(242,183,5,0.15)", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", transition:"all .3s" }}>
+            <div className="mono" style={{fontSize:36, fontWeight:700, letterSpacing:1}}>{fmtHMS(elapsed)}</div>
+            <div style={{fontSize:14, fontWeight:600, opacity:0.8, marginTop:4}}>{running ? "PARAR" : "INICIAR"}</div>
+            {running && activeGroupCount > 0 && <div style={{fontSize:12, opacity:0.9, marginTop:8}}>Você + {activeGroupCount} pessoa(s)</div>}
+          </button>
+        </div>
+
+        {!running && (
+          <div style={{width: "100%", display: "flex", flexDirection: "column", gap: 10, marginBottom: 12}}>
+            {/* Status Selector */}
+            <div style={{display:"flex", gap:8}}>
+               <button onClick={handleSetWorking} className={`selector-btn ${isWorking ? "active" : "inactive"}`}>Trabalhando</button>
+               <button onClick={handleSetNotWorking} className={`selector-btn ${!isWorking ? "active" : "inactive"}`}>Social / Visitando</button>
+            </div>
+            
+            {/* Location Selector */}
+            <div style={{display:"flex", gap:8}}>
+               {["Sede", "Poli", "Casa", "Outro"].map(l => (
+                 <button key={l} disabled={!isWorking && l !== "Sede"} onClick={() => setLocation(l)} className={`selector-btn ${location===l ? "active" : "inactive"}`}>{l}</button>
+               ))}
+            </div>
+
+            {/* Guests */}
+            <input value={guests} onChange={e=>setGuests(e.target.value)} placeholder="+ Adicionar convidados (opcional, digite nomes)" style={{margin:0, fontSize:13.5, padding:"10px 14px"}} />
+          </div>
+        )}
+
+        {running && (
+          <div style={{background: "var(--surface)", border: "1px solid var(--line)", padding: "10px 16px", borderRadius: "12px", width: "100%", textAlign: "center", fontSize: 13, color: "var(--text-muted)"}}>
+            {activeSession.isWorking ? "Trabalhando" : "Social"} em <strong>{activeSession.location}</strong>
+            {activeSession.guests && <div style={{marginTop:4, fontSize: 12}}>c/ {activeSession.guests}</div>}
+          </div>
+        )}
+
+        {!running && (
+          <div style={{display:"flex", gap:10, width:"100%", marginTop: 8}}>
+            <button className="btn" onClick={()=>setShowGroupModal(true)} style={{flex:1, fontSize:13}}><Icons.Users/> Iniciar Grupo</button>
+            <button className="btn" onClick={()=>setShowManualModal(true)} style={{flex:1, fontSize:13}}><Icons.Clock/> Esqueci de Bater</button>
+          </div>
+        )}
       </div>
 
-      {!running && (
-        <div style={{display:"flex", gap:10, width:"100%", marginBottom:30}}>
-          <button className="btn" onClick={()=>setShowGroupModal(true)} style={{flex:1, fontSize:13}}><Icons.Users/> Iniciar Grupo</button>
-          <button className="btn" onClick={()=>setShowManualModal(true)} style={{flex:1, fontSize:13}}><Icons.Clock/> Esqueci de Bater</button>
-        </div>
-      )}
-
-      <div style={{width:"100%"}}>
+      {/* ÁREA INFERIOR SCROLLÁVEL (Histórico) */}
+      <div style={{flex:1, overflowY:"auto", padding:"0 20px 24px", width:"100%"}}>
         <div style={{fontSize:13, color:"var(--text-muted)", marginBottom:10}}>Hoje: <span className="mono" style={{color:"var(--text)", fontWeight:600}}>{fmtHM(myTodaySecs + (running?elapsed:0))}</span></div>
         {recentSessions.length === 0 && <div style={{fontSize:13, color:"var(--text-muted)"}}>Nenhum registro recente.</div>}
         {recentSessions.map(s => {
@@ -327,7 +365,7 @@ function PontoTab({ user, users, activeSession, activeGroupCount, elapsed, onSta
 
       {showGroupModal && (
         <Modal title="Trabalho em Grupo" onClose={()=>setShowGroupModal(false)}>
-          <p style={{fontSize:13, color:"var(--text-muted)", marginBottom:16}}>Selecione quem está trabalhando com você agora.</p>
+          <p style={{fontSize:13, color:"var(--text-muted)", marginBottom:16}}>Selecione quem está com você ({isWorking ? "Trabalhando" : "Social"} em {location}).</p>
           <div style={{maxHeight:250, overflowY:"auto", marginBottom:16, border:"1px solid var(--line)", borderRadius:12, padding:10}}>
             {users.filter(u=>u.uid !== user.uid).map(u => (
               <label key={u.uid} style={{display:"flex", alignItems:"center", padding:"8px 0", cursor:"pointer", borderBottom:"1px solid var(--line)"}}>
@@ -363,9 +401,33 @@ function PontoTab({ user, users, activeSession, activeGroupCount, elapsed, onSta
   );
 }
 
-function MuralTab({events, onClear}) {
+function MuralTab({events, onClear, sessions, users}) {
+  
+  // Quem está na sede agora? (Sessão rodando e Location = Sede)
+  const pessoasNaSede = sessions.filter(s => s.endTime === null && s.location === "Sede");
+  const uidsNaSede = [...new Set(pessoasNaSede.map(s => s.uid))];
+
   return (
     <div className="fade-in" style={{flex:1, padding:"20px", overflowY:"auto"}}>
+      
+      {/* Seção Nova: Quem está na sede */}
+      {uidsNaSede.length > 0 && (
+        <div style={{marginBottom: 24, padding: "16px", background: "var(--surface-2)", borderRadius: 12}}>
+          <h3 style={{fontSize: 14, margin: "0 0 14px", color: "var(--text)", display:"flex", alignItems:"center", gap:6}}><Icons.MapPin/> Na Sede Agora ({uidsNaSede.length})</h3>
+          <div style={{display: "flex", gap: 14, overflowX: "auto"}} className="scrollbar-none">
+            {uidsNaSede.map(uid => {
+               const u = users.find(x => x.uid === uid) || {name: "Alguém"};
+               return (
+                 <div key={uid} style={{display: "flex", flexDirection: "column", alignItems: "center", gap: 6}}>
+                   <Avatar user={u} size="md" />
+                   <span style={{fontSize: 11, color: "var(--text-muted)", whiteSpace: "nowrap"}}>{u.name.split(' ')[0]}</span>
+                 </div>
+               )
+            })}
+          </div>
+        </div>
+      )}
+
       <div style={{display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16}}>
         <h2 style={{fontSize:20, margin:0}}>Mural da Equipe</h2>
         {events.length > 0 && (
@@ -378,15 +440,28 @@ function MuralTab({events, onClear}) {
       {events.length === 0 ? <p style={{color:"var(--text-muted)", fontSize:14}}>Silêncio por aqui...</p> : null}
       <div style={{display:"flex", flexDirection:"column", gap:10}}>
         {events.map(ev => {
-          const displayName = ev.names || ev.name || "Alguém";
-          const isPlural = displayName.includes(",");
+          const namesStr = ev.names || ev.name || "Alguém";
+          const guestsStr = ev.guests ? ` e convidados (${ev.guests})` : "";
+          const isPlural = namesStr.includes(",") || !!ev.guests;
+          const displayName = namesStr + guestsStr;
+
+          const locText = ev.location === "Sede" ? "na Sede" : ev.location === "Poli" ? "na Poli" : ev.location === "Casa" ? "em Casa" : "em outro local";
+          
+          let actionText = "";
+          if (ev.type === "start") {
+             if (ev.isWorking) actionText = isPlural ? "começaram a trabalhar" : "começou a trabalhar";
+             else actionText = isPlural ? "estão" : "está";
+          } else {
+             actionText = isPlural ? "pararam o ponto" : "parou o ponto";
+          }
 
           return (
             <div key={ev.id} style={{display:"flex", gap:12, background:"var(--surface)", border:"1px solid var(--line)", borderRadius:12, padding:"14px"}}>
               <div style={{width:10, height:10, borderRadius:"50%", marginTop:5, flexShrink:0, background: ev.type==="start" ? "var(--live)" : "var(--warn)"}}/>
               <div>
                 <div style={{fontSize:14.5, lineHeight:1.4}}>
-                  <strong>{displayName}</strong> {ev.type === "start" ? (isPlural?"começaram a trabalhar":"começou a trabalhar") : (isPlural?"pararam o ponto":"parou o ponto")}
+                  <strong>{displayName}</strong> {actionText} 
+                  {ev.type === "start" && <strong style={{color:"var(--accent)"}}> {locText}</strong>}
                   {ev.type === "stop" && ev.durationSeconds ? ` (${fmtHM(ev.durationSeconds)})` : ""}
                 </div>
                 <div className="mono" style={{fontSize:11.5, color:"var(--text-muted)", marginTop:4}}>{ev.timeLabel}</div>
@@ -413,10 +488,14 @@ function RankingTab({sessions, users, user, activeSession, elapsed}) {
     const map = {};
     users.forEach(u => map[u.uid] = { name: u.name, role: u.role, photo: u.photoBase64, seconds: 0 });
     for(const s of sessions){
+      // Só ranqueia se estiver TRABALHANDO
+      if(!s.isWorking) continue;
       if(!s.endTime || new Date(s.startTime) < range.start) continue;
       if(map[s.uid]) map[s.uid].seconds += s.durationSeconds;
     }
-    if(activeSession && map[user.uid]) map[user.uid].seconds += elapsed;
+    // Adiciona tempo da sessão ativa SE estiver trabalhando
+    if(activeSession && activeSession.isWorking && map[user.uid]) map[user.uid].seconds += elapsed;
+    
     return Object.entries(map).map(([uid, v]) => ({ uid, ...v })).sort((a,b) => b.seconds - a.seconds);
   }, [sessions, range, users, activeSession, elapsed, user]);
 
@@ -451,39 +530,6 @@ function RankingTab({sessions, users, user, activeSession, elapsed}) {
           );
         })}
       </div>
-    </div>
-  );
-}
-
-function ChatTab({user, chatMsgs, onSend}) {
-  const [text, setText] = useState("");
-  const endRef = useRef(null);
-
-  useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [chatMsgs]);
-
-  const send = (e) => { e.preventDefault(); if(!text.trim()) return; onSend(text.trim()); setText(""); };
-
-  return (
-    <div className="fade-in" style={{flex:1, display:"flex", flexDirection:"column", overflow:"hidden", background:"var(--surface)"}}>
-      <div style={{flex:1, overflowY:"auto", padding:"20px", display:"flex", flexDirection:"column", gap:12}}>
-        {chatMsgs.slice().reverse().map(m => {
-          const isMe = m.uid === user.uid;
-          return (
-            <div key={m.id} style={{display:"flex", gap:8, flexDirection: isMe?"row-reverse":"row", alignItems:"flex-end"}}>
-              {!isMe && <Avatar user={{name:m.name, photoBase64:m.photo}} />}
-              <div style={{display:"flex", flexDirection:"column", alignItems: isMe?"flex-end":"flex-start", maxWidth:"80%"}}>
-                {!isMe && <span style={{fontSize:11, color:"var(--text-muted)", marginBottom:4, marginLeft:4}}>{m.name}</span>}
-                <div className={isMe ? "chat-bubble chat-mine" : "chat-bubble chat-other"}>{m.text}</div>
-              </div>
-            </div>
-          );
-        })}
-        <div ref={endRef} />
-      </div>
-      <form onSubmit={send} style={{padding:"12px 16px", background:"var(--bg)", borderTop:"1px solid var(--line)", display:"flex", gap:10, paddingBottom:"calc(12px + env(safe-area-inset-bottom))"}}>
-        <input value={text} onChange={e=>setText(e.target.value)} placeholder="Mensagem..." style={{margin:0, flex:1, borderRadius:20}} />
-        <button type="submit" style={{width:46, height:46, borderRadius:"50%", border:"none", background:"var(--accent)", color:"#1A1300", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0}}><Icons.Send/></button>
-      </form>
     </div>
   );
 }
@@ -546,10 +592,7 @@ function App() {
   
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
-  
-  // ATUALIZADO: Estado que gerencia a instalação do App
   const [installPrompt, setInstallPrompt] = useState(null);
-  
   const [muralClearedAt, setMuralClearedAt] = useState(parseInt(localStorage.getItem("onda-mural-cleared") || "0", 10));
 
   const [theme, setTheme] = useState(localStorage.getItem("onda-theme") || "dark");
@@ -562,18 +605,13 @@ function App() {
   const [users, setUsers] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [events, setEvents] = useState([]);
-  const [chatMsgs, setChatMsgs] = useState([]);
   
   const [activeSession, setActiveSession] = useState(null);
   const [elapsed, setElapsed] = useState(0);
   const [goalShown, setGoalShown] = useState({ week: false, month: false });
 
-  // ATUALIZADO: Escutador do evento de instalação do App
   useEffect(() => {
-    const handleBeforeInstall = (e) => {
-      e.preventDefault();
-      setInstallPrompt(e);
-    };
+    const handleBeforeInstall = (e) => { e.preventDefault(); setInstallPrompt(e); };
     window.addEventListener('beforeinstallprompt', handleBeforeInstall);
     return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
   }, []);
@@ -630,20 +668,11 @@ function App() {
       setEvents(s.docs.map(d=>{ 
         const data = d.data(); 
         const dateObj = data.createdAt?.toDate ? data.createdAt.toDate() : new Date();
-        return {
-          id: d.id, 
-          ...data, 
-          tsMs: dateObj.getTime(), 
-          timeLabel: dateObj.toLocaleString("pt-BR",{hour:"2-digit",minute:"2-digit"})
-        } 
+        return { id: d.id, ...data, tsMs: dateObj.getTime(), timeLabel: dateObj.toLocaleString("pt-BR",{hour:"2-digit",minute:"2-digit"}) } 
       }));
     });
-    
-    const unsubC = onSnapshot(query(collection(db, "chat"), orderBy("createdAt", "desc"), limit(40)), s => {
-      setChatMsgs(s.docs.map(d=>({id:d.id, ...d.data()})));
-    });
 
-    return () => { unsubU(); unsubS(); unsubE(); unsubC(); };
+    return () => { unsubU(); unsubS(); unsubE(); };
   }, [fbReady, user, dbUser]);
 
   useEffect(() => {
@@ -653,12 +682,12 @@ function App() {
   }, [activeSession]);
 
   useEffect(() => {
-    if(!activeSession || !dbUser) return;
+    if(!activeSession || !dbUser || !activeSession.isWorking) return;
     const isEfetivo = dbUser.role === "Membro Efetivo";
     const gW = isEfetivo ? META_EFETIVO_SEMANA : META_COLAB_SEMANA;
     const gM = isEfetivo ? META_EFETIVO_MES : META_COLAB_MES;
-    const wkSum = sessions.filter(s => s.uid === user.uid && s.endTime && new Date(s.startTime) >= startOfWeek(new Date())).reduce((a,b)=>a+b.durationSeconds, 0);
-    const moSum = sessions.filter(s => s.uid === user.uid && s.endTime && new Date(s.startTime) >= startOfMonth(new Date())).reduce((a,b)=>a+b.durationSeconds, 0);
+    const wkSum = sessions.filter(s => s.uid === user.uid && s.isWorking && s.endTime && new Date(s.startTime) >= startOfWeek(new Date())).reduce((a,b)=>a+b.durationSeconds, 0);
+    const moSum = sessions.filter(s => s.uid === user.uid && s.isWorking && s.endTime && new Date(s.startTime) >= startOfMonth(new Date())).reduce((a,b)=>a+b.durationSeconds, 0);
 
     if (wkSum + elapsed === gW && !goalShown.week) { alert("🎉 META SEMANAL ATINGIDA! Bom trabalho!"); setGoalShown(p=>({...p, week:true})); }
     if (moSum + elapsed === gM && !goalShown.month) { alert("🏆 META MENSAL ATINGIDA! Você é incrível!"); setGoalShown(p=>({...p, month:true})); }
@@ -670,13 +699,14 @@ function App() {
     setDbUser(profileData); setIsEditingProfile(false); setBusy(false);
   };
 
-  const startSession = async (otherUids = []) => {
+  const startSession = async (otherUids = [], isWorking = true, location = "Sede", guestsStr = "") => {
     setBusy(true);
     const startTime = new Date().toISOString(); const groupUids = [user.uid, ...otherUids];
     const groupNames = groupUids.map(id => users.find(u=>u.uid===id)?.name || "Alguém").join(", ");
     const groupId = "grp_" + Date.now();
-    for(const uid of groupUids) await window.fb.addDoc(window.fb.collection(window.fb.db, "sessions"), { uid, groupId, startTime, endTime: null, durationSeconds: null });
-    await window.fb.addDoc(window.fb.collection(window.fb.db, "events"), { uids: groupUids, names: groupNames, type: "start", createdAt: window.fb.serverTimestamp() });
+    
+    for(const uid of groupUids) await window.fb.addDoc(window.fb.collection(window.fb.db, "sessions"), { uid, groupId, startTime, endTime: null, durationSeconds: null, isWorking, location, guests: guestsStr });
+    await window.fb.addDoc(window.fb.collection(window.fb.db, "events"), { uids: groupUids, names: groupNames, type: "start", createdAt: window.fb.serverTimestamp(), isWorking, location, guests: guestsStr, groupId });
     setBusy(false);
   };
 
@@ -692,20 +722,28 @@ function App() {
          uids.push(s.uid);
          namesArr.push(users.find(u => u.uid === s.uid)?.name || "Alguém");
       }
-      await window.fb.addDoc(window.fb.collection(window.fb.db, "events"), { uids, names: namesArr.join(", "), type: "stop", durationSeconds, createdAt: window.fb.serverTimestamp() });
+      await window.fb.addDoc(window.fb.collection(window.fb.db, "events"), { uids, names: namesArr.join(", "), type: "stop", durationSeconds, createdAt: window.fb.serverTimestamp(), guests: activeSession.guests });
     } else {
       await window.fb.updateDoc(window.fb.doc(window.fb.db, "sessions", activeSession.id), { endTime, durationSeconds });
-      await window.fb.addDoc(window.fb.collection(window.fb.db, "events"), { uids: [user.uid], names: dbUser.name, type: "stop", durationSeconds, createdAt: window.fb.serverTimestamp() });
+      await window.fb.addDoc(window.fb.collection(window.fb.db, "events"), { uids: [user.uid], names: dbUser.name, type: "stop", durationSeconds, createdAt: window.fb.serverTimestamp(), sessionId: activeSession.id, guests: activeSession.guests });
     }
     setBusy(false);
   };
 
   const addManualSession = async (startTime, endTime, durationSeconds) => {
-    setBusy(true); await window.fb.addDoc(window.fb.collection(window.fb.db, "sessions"), { uid: user.uid, startTime, endTime, durationSeconds }); setBusy(false);
+    setBusy(true); await window.fb.addDoc(window.fb.collection(window.fb.db, "sessions"), { uid: user.uid, startTime, endTime, durationSeconds, isWorking: true, location: "Outro", guests: "" }); setBusy(false);
   };
 
   const deleteSession = async (id) => {
-    setBusy(true); await window.fb.deleteDoc(window.fb.doc(window.fb.db, "sessions", id)); setBusy(false);
+    setBusy(true); 
+    const sessionToDelete = sessions.find(s => s.id === id);
+    if(sessionToDelete) {
+       await window.fb.deleteDoc(window.fb.doc(window.fb.db, "sessions", id));
+       // Apaga do mural os eventos conectados a essa sessão
+       const eventsToDelete = events.filter(e => (e.groupId && e.groupId === sessionToDelete.groupId) || (e.sessionId && e.sessionId === id));
+       for(const ev of eventsToDelete) await window.fb.deleteDoc(window.fb.doc(window.fb.db, "events", ev.id));
+    }
+    setBusy(false);
   };
 
   const removeUser = async (uid) => {
@@ -713,25 +751,17 @@ function App() {
     if(uid === user.uid) { await handleLogout(); setDbUser(null); }
   };
 
-  const sendChat = async (text) => {
-    await window.fb.addDoc(window.fb.collection(window.fb.db, "chat"), { uid: user.uid, name: dbUser.name, photo: dbUser.photoBase64||null, text, createdAt: window.fb.serverTimestamp() });
-  };
-
   const handleClearMuralLocal = () => {
     if (window.confirm("Deseja ocultar as notificações atuais apenas para você?")) {
-      const now = Date.now();
-      setMuralClearedAt(now);
-      localStorage.setItem("onda-mural-cleared", now.toString());
+      const now = Date.now(); setMuralClearedAt(now); localStorage.setItem("onda-mural-cleared", now.toString());
     }
   };
 
   if(!fbReady || loadingProfile) return <div style={{flex:1, display:"flex", alignItems:"center", justifyContent:"center", color:"var(--text-muted)"}}>Carregando sistema...</div>;
-  if(!user) return <LoginGoogleScreen onLogin={handleGoogleLogin} busy={loginBusy} installPrompt={installPrompt} />; // ATUALIZADO: Enviando evento para o botão aparecer
-  
+  if(!user) return <LoginGoogleScreen onLogin={handleGoogleLogin} busy={loginBusy} installPrompt={installPrompt} />;
   if(!dbUser || isEditingProfile) return <OnboardingScreen fbUser={user} dbUser={dbUser} onSave={saveProfile} onCancel={dbUser ? ()=>setIsEditingProfile(false) : null} busy={busy} />;
 
   const activeGroupCount = activeSession?.groupId ? Math.max(0, sessions.filter(s => s.groupId === activeSession.groupId && s.endTime === null).length - 1) : 0;
-  
   const visibleEvents = events.filter(e => e.tsMs > muralClearedAt);
 
   return (
@@ -749,16 +779,16 @@ function App() {
           <button onClick={handleLogout} style={{background:"none", border:"none", color:"var(--warn)", cursor:"pointer", padding:8, fontSize:12, fontWeight:600}}>Sair</button>
         </div>
       </div>
+      
       {tab === "ponto" && <PontoTab user={user} users={users} sessions={sessions} activeSession={activeSession} activeGroupCount={activeGroupCount} elapsed={elapsed} onStart={startSession} onStop={stopSession} onManualAdd={addManualSession} onDeleteSession={deleteSession} busy={busy} />}
-      {tab === "mural" && <MuralTab events={visibleEvents} onClear={handleClearMuralLocal} />}
+      {tab === "mural" && <MuralTab events={visibleEvents} onClear={handleClearMuralLocal} sessions={sessions} users={users} />}
       {tab === "ranking" && <RankingTab sessions={sessions} users={users} user={user} activeSession={activeSession} elapsed={elapsed} />}
-      {tab === "chat" && <ChatTab user={user} chatMsgs={chatMsgs} onSend={sendChat} />}
       {tab === "membros" && <MembrosTab users={users} me={user} onRemoveUser={removeUser} />}
+      
       <div className="bottom-nav">
         <button className={tab==="ponto"?"active":""} onClick={()=>setTab("ponto")}><Icons.Clock/> Ponto</button>
         <button className={tab==="mural"?"active":""} onClick={()=>setTab("mural")}><Icons.List/> Mural</button>
         <button className={tab==="ranking"?"active":""} onClick={()=>setTab("ranking")}><Icons.Trophy/> Ranking</button>
-        <button className={tab==="chat"?"active":""} onClick={()=>setTab("chat")}><Icons.Chat/> Chat</button>
         <button className={tab==="membros"?"active":""} onClick={()=>setTab("membros")}><Icons.Users/> Equipe</button>
       </div>
     </>
