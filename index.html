@@ -210,6 +210,8 @@ function PontoTab({ user, users, activeSession, activeGroupCount, elapsed, onSta
   const running = !!activeSession;
   const [showGroupModal, setShowGroupModal] = useState(false);
   const [showManualModal, setShowManualModal] = useState(false);
+  const [showStopModal, setShowStopModal] = useState(false); // NOVO: Controle da tela de Parar Grupo
+  
   const [selectedGroup, setSelectedGroup] = useState([]);
   const [mStart, setMStart] = useState("");
   const [mEnd, setMEnd] = useState("");
@@ -222,6 +224,13 @@ function PontoTab({ user, users, activeSession, activeGroupCount, elapsed, onSta
   const recentSessions = useMemo(() => sessions.filter(s => s.uid === user.uid && s.endTime).slice(0,5), [sessions, user]);
 
   const handleStartGroup = () => { onStart(selectedGroup); setShowGroupModal(false); };
+  
+  const handleStopClick = () => {
+    // Se estiver rodando em grupo com outras pessoas ainda ativas, pergunta. Se estiver sozinho, para direto.
+    if (activeGroupCount > 0) setShowStopModal(true);
+    else onStop(false);
+  };
+
   const handleSaveManual = () => {
     if(!mStart || !mEnd) return alert("Preencha as datas.");
     const sTime = new Date(mStart).getTime(); const eTime = new Date(mEnd).getTime();
@@ -234,7 +243,7 @@ function PontoTab({ user, users, activeSession, activeGroupCount, elapsed, onSta
   return (
     <div className="fade-in" style={{flex:1, display:"flex", flexDirection:"column", alignItems:"center", padding:"24px 20px", overflowY:"auto"}}>
       <div style={{position:"relative", display:"flex", justifyContent:"center", alignItems:"center", margin:"20px 0 40px"}}>
-        <button disabled={busy} onClick={running ? onStop : () => onStart([])} style={{ width:200, height:200, borderRadius:"50%", border:"none", cursor:"pointer", background: running ? "radial-gradient(circle at 30% 30%, #ff7a4d, var(--warn))" : "radial-gradient(circle at 30% 30%, #ffd35c, var(--accent))", color: running ? "white" : "#1A1300", boxShadow: running ? "0 0 0 12px rgba(228,87,46,0.15)" : "0 0 0 12px rgba(242,183,5,0.15)", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", transition:"all .3s" }}>
+        <button disabled={busy} onClick={running ? handleStopClick : () => onStart([])} style={{ width:200, height:200, borderRadius:"50%", border:"none", cursor:"pointer", background: running ? "radial-gradient(circle at 30% 30%, #ff7a4d, var(--warn))" : "radial-gradient(circle at 30% 30%, #ffd35c, var(--accent))", color: running ? "white" : "#1A1300", boxShadow: running ? "0 0 0 12px rgba(228,87,46,0.15)" : "0 0 0 12px rgba(242,183,5,0.15)", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", transition:"all .3s" }}>
           <div className="mono" style={{fontSize:42, fontWeight:700, letterSpacing:1}}>{fmtHMS(elapsed)}</div>
           <div style={{fontSize:14, fontWeight:600, opacity:0.8, marginTop:4}}>{running ? "PARAR" : "INICIAR"}</div>
           {running && activeGroupCount > 0 && <div style={{fontSize:12, opacity:0.9, marginTop:8}}>Você + {activeGroupCount} pessoa(s)</div>}
@@ -280,6 +289,16 @@ function PontoTab({ user, users, activeSession, activeGroupCount, elapsed, onSta
         </Modal>
       )}
 
+      {showStopModal && (
+        <Modal title="Parar Cronômetro" onClose={()=>setShowStopModal(false)}>
+          <p style={{fontSize:14, color:"var(--text-muted)", marginBottom:20, lineHeight:1.5}}>Você está em um ponto de grupo. Deseja encerrar o ponto de todas as pessoas vinculadas a essa sessão ou apenas o seu?</p>
+          <div style={{display:"flex", flexDirection:"column", gap:10}}>
+            <button className="btn btn-primary" onClick={() => { onStop(true); setShowStopModal(false); }}>Parar para TODOS</button>
+            <button className="btn" style={{background:"var(--surface)", border:"1px solid var(--line)"}} onClick={() => { onStop(false); setShowStopModal(false); }}>Parar SÓ PARA MIM</button>
+          </div>
+        </Modal>
+      )}
+
       {showManualModal && (
         <Modal title="Adicionar Registro Antigo" onClose={()=>setShowManualModal(false)}>
           <label style={{fontSize:13, display:"block", marginBottom:4}}>Início do trabalho</label>
@@ -299,18 +318,24 @@ function MuralTab({events}) {
       <h2 style={{fontSize:20, marginTop:0, marginBottom:16}}>Mural da Equipe</h2>
       {events.length === 0 ? <p style={{color:"var(--text-muted)", fontSize:14}}>Silêncio por aqui...</p> : null}
       <div style={{display:"flex", flexDirection:"column", gap:10}}>
-        {events.map(ev => (
-          <div key={ev.id} style={{display:"flex", gap:12, background:"var(--surface)", border:"1px solid var(--line)", borderRadius:12, padding:"14px"}}>
-            <div style={{width:10, height:10, borderRadius:"50%", marginTop:5, flexShrink:0, background: ev.type==="start" ? "var(--live)" : "var(--warn)"}}/>
-            <div>
-              <div style={{fontSize:14.5, lineHeight:1.4}}>
-                <strong>{ev.names}</strong> {ev.type === "start" ? (ev.names.includes(",")?"começaram a trabalhar":"começou a trabalhar") : (ev.names.includes(",")?"pararam o ponto":"parou o ponto")}
-                {ev.type === "stop" && ev.durationSeconds ? ` (${fmtHM(ev.durationSeconds)})` : ""}
+        {events.map(ev => {
+          // Correção do Erro: Protege contra registros antigos sem o campo "names"
+          const displayName = ev.names || ev.name || "Alguém";
+          const isPlural = displayName.includes(",");
+
+          return (
+            <div key={ev.id} style={{display:"flex", gap:12, background:"var(--surface)", border:"1px solid var(--line)", borderRadius:12, padding:"14px"}}>
+              <div style={{width:10, height:10, borderRadius:"50%", marginTop:5, flexShrink:0, background: ev.type==="start" ? "var(--live)" : "var(--warn)"}}/>
+              <div>
+                <div style={{fontSize:14.5, lineHeight:1.4}}>
+                  <strong>{displayName}</strong> {ev.type === "start" ? (isPlural?"começaram a trabalhar":"começou a trabalhar") : (isPlural?"pararam o ponto":"parou o ponto")}
+                  {ev.type === "stop" && ev.durationSeconds ? ` (${fmtHM(ev.durationSeconds)})` : ""}
+                </div>
+                <div className="mono" style={{fontSize:11.5, color:"var(--text-muted)", marginTop:4}}>{ev.timeLabel}</div>
               </div>
-              <div className="mono" style={{fontSize:11.5, color:"var(--text-muted)", marginTop:4}}>{ev.timeLabel}</div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   );
@@ -563,11 +588,30 @@ function App() {
     setBusy(false);
   };
 
-  const stopSession = async () => {
-    if(!activeSession) return; setBusy(true);
-    const endTime = new Date().toISOString(); const durationSeconds = Math.floor((new Date(endTime) - new Date(activeSession.startTime))/1000);
-    await window.fb.updateDoc(window.fb.doc(window.fb.db, "sessions", activeSession.id), { endTime, durationSeconds });
-    await window.fb.addDoc(window.fb.collection(window.fb.db, "events"), { uids: [user.uid], names: dbUser.name, type: "stop", durationSeconds, createdAt: window.fb.serverTimestamp() });
+  // ATUALIZADO: Lógica dupla de parar (apenas para o usuário ou para todo o grupo)
+  const stopSession = async (stopForAll = false) => {
+    if(!activeSession) return; 
+    setBusy(true);
+    const endTime = new Date().toISOString(); 
+    const durationSeconds = Math.floor((new Date(endTime) - new Date(activeSession.startTime))/1000);
+    
+    if (stopForAll && activeSession.groupId) {
+      // Para todos no mesmo grupo que ainda estejam com o cronômetro rodando
+      const groupSessions = sessions.filter(s => s.groupId === activeSession.groupId && s.endTime === null);
+      const uids = [];
+      const namesArr = [];
+      for (const s of groupSessions) {
+         await window.fb.updateDoc(window.fb.doc(window.fb.db, "sessions", s.id), { endTime, durationSeconds });
+         uids.push(s.uid);
+         const uName = users.find(u => u.uid === s.uid)?.name || "Alguém";
+         namesArr.push(uName);
+      }
+      await window.fb.addDoc(window.fb.collection(window.fb.db, "events"), { uids, names: namesArr.join(", "), type: "stop", durationSeconds, createdAt: window.fb.serverTimestamp() });
+    } else {
+      // Para apenas quem apertou
+      await window.fb.updateDoc(window.fb.doc(window.fb.db, "sessions", activeSession.id), { endTime, durationSeconds });
+      await window.fb.addDoc(window.fb.collection(window.fb.db, "events"), { uids: [user.uid], names: dbUser.name, type: "stop", durationSeconds, createdAt: window.fb.serverTimestamp() });
+    }
     setBusy(false);
   };
 
@@ -591,7 +635,8 @@ function App() {
   if(!fbReady) return <div style={{flex:1, display:"flex", alignItems:"center", justifyContent:"center"}}>Carregando sistema...</div>;
   if(!dbUser) return <LoginScreen onEnter={handleEnter} busy={loginBusy} />;
 
-  const activeGroupCount = activeSession?.groupId ? sessions.filter(s => s.groupId === activeSession.groupId && s.endTime === null).length - 1 : 0;
+  // Descobre quantas OUTRAS pessoas do mesmo grupo ainda estão ativas (subtrai 1 que é o próprio usuário)
+  const activeGroupCount = activeSession?.groupId ? Math.max(0, sessions.filter(s => s.groupId === activeSession.groupId && s.endTime === null).length - 1) : 0;
 
   return (
     <>
