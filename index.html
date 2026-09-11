@@ -32,7 +32,7 @@
   button, input, select { font-family: inherit; }
   input, select { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--text); font-size: 16px; outline: none; margin-bottom: 12px; }
   input[type="checkbox"] { width: auto; margin-right: 8px; transform: scale(1.2); }
-  .btn { width: 100%; padding: 14px 16px; border-radius: 12px; border: none; background: var(--surface-2); color: var(--text); font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; }
+  .btn { width: 100%; padding: 14px 16px; border-radius: 12px; border: none; background: var(--surface-2); color: var(--text); font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
   .btn-primary { background: var(--accent); color: #1A1300; }
   .btn-danger { background: var(--warn); color: white; }
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -45,8 +45,8 @@
   .toast-in { animation: toastIn .4s cubic-bezier(.2,.9,.3,1) both; }
   @keyframes toastIn { from{opacity:0; transform:translateY(-20px) scale(.95)} to{opacity:1; transform:translateY(0) scale(1)} }
   .scrollbar-none::-webkit-scrollbar { display: none; }
-  .bottom-nav { border-top: 1px solid var(--line); background: var(--surface-2); padding-bottom: env(safe-area-inset-bottom); display: flex; z-index: 50; }
-  .bottom-nav button { flex: 1; padding: 12px 0; background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 11px; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: color 0.2s; }
+  .bottom-nav { border-top: 1px solid var(--line); background: var(--surface-2); padding-bottom: env(safe-area-inset-bottom); display: flex; }
+  .bottom-nav button { flex: 1; padding: 12px 0; background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 11px; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 4px; }
   .bottom-nav button.active { color: var(--accent); }
   .chat-bubble { padding: 10px 14px; border-radius: 16px; font-size: 14.5px; max-width: 85%; word-wrap: break-word; line-height: 1.4; }
   .chat-mine { background: var(--accent-soft); border-bottom-right-radius: 4px; align-self: flex-end; }
@@ -152,66 +152,6 @@ const Avatar = ({ user, size="md" }) => {
   return <div className={cls}>{user?.name?.charAt(0).toUpperCase() || "?"}</div>;
 };
 
-// --- ANIMAÇÃO DE ENTRADA (SPLASH SCREEN) ---
-function SplashAnimation({ onComplete }) {
-  useEffect(() => {
-    const timer = setTimeout(onComplete, 2600); // Exibe por 2.6 segundos
-    return () => clearTimeout(timer);
-  }, [onComplete]);
-
-  return (
-    <div style={{
-      position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
-      background: "var(--bg)", zIndex: 9999, display: "flex",
-      flexDirection: "column", alignItems: "center", justifyContent: "center",
-      animation: "splashFadeOut 0.4s ease 2.2s forwards"
-    }}>
-      <style>{`
-        @keyframes drawOnda {
-          0% { stroke-dashoffset: 400; opacity: 0; }
-          10% { opacity: 1; }
-          100% { stroke-dashoffset: 0; opacity: 1; }
-        }
-        @keyframes fadeTextIn {
-          0% { opacity: 0; transform: translateY(12px); }
-          100% { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes splashFadeOut {
-          to { opacity: 0; visibility: hidden; }
-        }
-      `}</style>
-
-      {/* Quadrado e Onda (Logo) */}
-      <svg width="120" height="120" viewBox="0 0 100 100" style={{ overflow: "visible" }}>
-        {/* Quadrado Azul claro com leve arredondamento */}
-        <rect x="5" y="5" width="90" height="90" rx="8" fill="#3299D9" />
-        
-        {/* Onda Amarela com animação stroke-dashoffset */}
-        <path 
-          d="M -15 55 Q 15 10 50 55 T 115 55"
-          fill="none" 
-          stroke="#F2B705" 
-          strokeWidth="18" 
-          strokeLinecap="round"
-          strokeDasharray="400" 
-          strokeDashoffset="400"
-          style={{ animation: "drawOnda 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards" }}
-        />
-      </svg>
-
-      {/* Textos com as cores oficiais */}
-      <div style={{
-        fontFamily: "'Space Grotesk', sans-serif", fontSize: "36px", fontWeight: 700, 
-        marginTop: "16px", display: "flex", flexDirection: "column", alignItems: "center",
-        lineHeight: 1, animation: "fadeTextIn 0.8s ease 0.6s forwards", opacity: 0
-      }}>
-        <span style={{ color: "#3299D9", letterSpacing: "-1px" }}>ONDA</span>
-        <span style={{ color: "#F2B705" }}>ELÉTRICA</span>
-      </div>
-    </div>
-  );
-}
-
 // --- COMPONENTES ---
 function Modal({ title, onClose, children }) {
   return (
@@ -240,6 +180,7 @@ function LoginGoogleScreen({ onLogin, busy }) {
   );
 }
 
+// ATUALIZADO: Suporte para editar dados existentes e botão de cancelar
 function OnboardingScreen({ fbUser, dbUser, onSave, onCancel, busy }) {
   const [name, setName] = useState(dbUser?.name || fbUser?.displayName || "");
   const [role, setRole] = useState(dbUser?.role || "Membro Efetivo");
@@ -560,7 +501,8 @@ function App() {
   const [fbReady, setFbReady] = useState(!!window.fb);
   const [user, setUser] = useState(null); 
   const [dbUser, setDbUser] = useState(null); 
-  const [showSplash, setShowSplash] = useState(true); // Controle da Tela de Splash
+  
+  // Controle de edição de perfil
   const [isEditingProfile, setIsEditingProfile] = useState(false);
 
   const [theme, setTheme] = useState(localStorage.getItem("onda-theme") || "dark");
@@ -656,7 +598,9 @@ function App() {
   const saveProfile = async (profileData) => {
     setBusy(true);
     await window.fb.setDoc(window.fb.doc(window.fb.db, "members", user.uid), { ...profileData, email: user.email, updatedAt: new Date().toISOString() }, {merge:true});
-    setDbUser(profileData); setIsEditingProfile(false); setBusy(false);
+    setDbUser(profileData); 
+    setIsEditingProfile(false); // Fecha o modo de edição se estiver aberto
+    setBusy(false);
   };
 
   const startSession = async (otherUids = []) => {
@@ -706,17 +650,16 @@ function App() {
     await window.fb.addDoc(window.fb.collection(window.fb.db, "chat"), { uid: user.uid, name: dbUser.name, photo: dbUser.photoBase64||null, text, createdAt: window.fb.serverTimestamp() });
   };
 
-  // Carregamento e Telas Iniciais
   if(!fbReady) return <div style={{flex:1, display:"flex", alignItems:"center", justifyContent:"center"}}>Carregando sistema...</div>;
   if(!user) return <LoginGoogleScreen onLogin={handleGoogleLogin} busy={loginBusy} />;
+  
+  // Se não tem perfil salvo OU clicou para editar, mostra a tela de configuração
   if(!dbUser || isEditingProfile) return <OnboardingScreen fbUser={user} dbUser={dbUser} onSave={saveProfile} onCancel={dbUser ? ()=>setIsEditingProfile(false) : null} busy={busy} />;
 
   const activeGroupCount = activeSession?.groupId ? Math.max(0, sessions.filter(s => s.groupId === activeSession.groupId && s.endTime === null).length - 1) : 0;
 
   return (
     <>
-      {showSplash && <SplashAnimation onComplete={() => setShowSplash(false)} />}
-      
       <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", padding:"14px 20px", borderBottom:"1px solid var(--line)", background:"var(--surface-2)"}}>
         <div style={{display:"flex", alignItems:"center", gap:10, cursor:"pointer"}} onClick={()=>setIsEditingProfile(true)} title="Editar Perfil">
           <Avatar user={dbUser} />
