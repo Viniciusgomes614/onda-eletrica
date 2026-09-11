@@ -180,11 +180,12 @@ function LoginGoogleScreen({ onLogin, busy }) {
   );
 }
 
-function OnboardingScreen({ fbUser, onSave, busy }) {
-  const [name, setName] = useState(fbUser?.displayName || "");
-  const [role, setRole] = useState("Membro Efetivo");
-  const [myGestoes, setMyGestoes] = useState([]);
-  const [photoBase64, setPhotoBase64] = useState(fbUser?.photoURL || null);
+// ATUALIZADO: Suporte para editar dados existentes e botão de cancelar
+function OnboardingScreen({ fbUser, dbUser, onSave, onCancel, busy }) {
+  const [name, setName] = useState(dbUser?.name || fbUser?.displayName || "");
+  const [role, setRole] = useState(dbUser?.role || "Membro Efetivo");
+  const [myGestoes, setMyGestoes] = useState(dbUser?.gestoes || []);
+  const [photoBase64, setPhotoBase64] = useState(dbUser?.photoBase64 || fbUser?.photoURL || null);
 
   const toggleGestao = (g) => setMyGestoes(p => p.includes(g) ? p.filter(x=>x!==g) : [...p, g]);
   const handleFile = (e) => { if(e.target.files[0]) compressImage(e.target.files[0], setPhotoBase64); };
@@ -196,8 +197,12 @@ function OnboardingScreen({ fbUser, onSave, busy }) {
 
   return (
     <div className="fade-in" style={{flex:1, padding:"32px 24px", overflowY:"auto"}}>
-      <h1 style={{fontSize:28, marginBottom:8}}>Quase lá,<br/><span style={{color:"var(--accent)"}}>{name.split(" ")[0] || "Equipe"}!</span></h1>
-      <p style={{color:"var(--text-muted)", marginBottom:24}}>Configure os últimos detalhes do seu perfil.</p>
+      <div style={{display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:8}}>
+        <h1 style={{fontSize:28, margin:0}}>{dbUser ? "Editar Perfil" : <>Quase lá,<br/><span style={{color:"var(--accent)"}}>{name.split(" ")[0] || "Equipe"}!</span></>}</h1>
+        {onCancel && <button onClick={onCancel} style={{background:"none", border:"none", color:"var(--text)", fontSize:24, cursor:"pointer"}}>×</button>}
+      </div>
+      <p style={{color:"var(--text-muted)", marginBottom:24}}>{dbUser ? "Atualize seu vínculo, gestões e foto abaixo." : "Configure os últimos detalhes do seu perfil."}</p>
+      
       <div style={{display:"flex", alignItems:"center", gap:16, marginBottom:20}}>
         <Avatar user={{photoBase64, name}} size="lg" />
         <div><label style={{fontSize:14, color:"var(--accent)", cursor:"pointer", fontWeight:600}}>+ Trocar foto<input type="file" accept="image/*" onChange={handleFile} style={{display:"none"}}/></label></div>
@@ -214,7 +219,7 @@ function OnboardingScreen({ fbUser, onSave, busy }) {
           </label>
         ))}
       </div>
-      <button className="btn btn-primary" onClick={submit} disabled={busy || !name.trim()}>{busy ? "Salvando..." : "Entrar no App"}</button>
+      <button className="btn btn-primary" onClick={submit} disabled={busy || !name.trim()}>{busy ? "Salvando..." : (dbUser ? "Salvar Perfil" : "Entrar no App")}</button>
     </div>
   );
 }
@@ -497,6 +502,9 @@ function App() {
   const [user, setUser] = useState(null); 
   const [dbUser, setDbUser] = useState(null); 
   
+  // Controle de edição de perfil
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+
   const [theme, setTheme] = useState(localStorage.getItem("onda-theme") || "dark");
   useEffect(() => { document.body.className = theme === "light" ? "theme-light" : ""; localStorage.setItem("onda-theme", theme); }, [theme]);
 
@@ -590,7 +598,9 @@ function App() {
   const saveProfile = async (profileData) => {
     setBusy(true);
     await window.fb.setDoc(window.fb.doc(window.fb.db, "members", user.uid), { ...profileData, email: user.email, updatedAt: new Date().toISOString() }, {merge:true});
-    setDbUser(profileData); setBusy(false);
+    setDbUser(profileData); 
+    setIsEditingProfile(false); // Fecha o modo de edição se estiver aberto
+    setBusy(false);
   };
 
   const startSession = async (otherUids = []) => {
@@ -642,16 +652,21 @@ function App() {
 
   if(!fbReady) return <div style={{flex:1, display:"flex", alignItems:"center", justifyContent:"center"}}>Carregando sistema...</div>;
   if(!user) return <LoginGoogleScreen onLogin={handleGoogleLogin} busy={loginBusy} />;
-  if(!dbUser) return <OnboardingScreen fbUser={user} onSave={saveProfile} busy={busy} />;
+  
+  // Se não tem perfil salvo OU clicou para editar, mostra a tela de configuração
+  if(!dbUser || isEditingProfile) return <OnboardingScreen fbUser={user} dbUser={dbUser} onSave={saveProfile} onCancel={dbUser ? ()=>setIsEditingProfile(false) : null} busy={busy} />;
 
   const activeGroupCount = activeSession?.groupId ? Math.max(0, sessions.filter(s => s.groupId === activeSession.groupId && s.endTime === null).length - 1) : 0;
 
   return (
     <>
       <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", padding:"14px 20px", borderBottom:"1px solid var(--line)", background:"var(--surface-2)"}}>
-        <div style={{display:"flex", alignItems:"center", gap:10}}>
+        <div style={{display:"flex", alignItems:"center", gap:10, cursor:"pointer"}} onClick={()=>setIsEditingProfile(true)} title="Editar Perfil">
           <Avatar user={dbUser} />
-          <div><span style={{fontWeight:700, fontSize:15, display:"block"}}>{dbUser.name}</span><span style={{fontSize:11, color:"var(--text-muted)", textTransform:"uppercase", letterSpacing:0.5}}>{dbUser.role}</span></div>
+          <div>
+            <span style={{fontWeight:700, fontSize:15, display:"flex", alignItems:"center"}}>{dbUser.name} <span style={{fontSize:11, color:"var(--accent)", fontWeight:600, marginLeft:6}}>✎ ED</span></span>
+            <span style={{fontSize:11, color:"var(--text-muted)", textTransform:"uppercase", letterSpacing:0.5}}>{dbUser.role}</span>
+          </div>
         </div>
         <div style={{display:"flex", gap:8}}>
           <button onClick={()=>setTheme(theme==="dark"?"light":"dark")} style={{background:"none", border:"none", color:"var(--text)", cursor:"pointer", padding:8}}>{theme==="dark"?<Icons.Sun/>:<Icons.Moon/>}</button>
