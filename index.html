@@ -4,22 +4,25 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Onda Elétrica · Ponto</title>
+
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <link rel="manifest" href="manifest.json" />
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
 <style>
   :root {
-    --bg:#0F1B2D; --surface:#16233A; --surface-2:#1D2C47; --line:rgba(234,240,246,0.08);
-    --accent:#F2B705; --accent-soft:rgba(242,183,5,0.14); --live:#3FD8C4; --warn:#E4572E;
-    --text:#EAF0F6; --text-muted:#8FA0BC; --modal-bg:rgba(15,27,45,0.85);
+    --bg: #0F1B2D; --surface: #16233A; --surface-2: #1D2C47; --line: rgba(234,240,246,0.08);
+    --accent: #F2B705; --accent-soft: rgba(242,183,5,0.14); --live: #3FD8C4;
+    --warn: #E4572E; --text: #EAF0F6; --text-muted: #8FA0BC; --modal-bg: rgba(15, 27, 45, 0.85);
   }
   .theme-light {
-    --bg:#F4F7F9; --surface:#FFFFFF; --surface-2:#E8EEF2; --line:rgba(15,27,45,0.1);
-    --accent:#F2B705; --accent-soft:rgba(242,183,5,0.25); --live:#00BFA5; --warn:#D32F2F;
-    --text:#0F1B2D; --text-muted:#5C6E8A; --modal-bg:rgba(244,247,249,0.85);
+    --bg: #F4F7F9; --surface: #FFFFFF; --surface-2: #E8EEF2; --line: rgba(15, 27, 45, 0.1);
+    --accent: #F2B705; --accent-soft: rgba(242,183,5,0.25); --live: #00BFA5;
+    --warn: #D32F2F; --text: #0F1B2D; --text-muted: #5C6E8A; --modal-bg: rgba(244, 247, 249, 0.85);
   }
   * { box-sizing: border-box; }
   html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text); font-family: 'Space Grotesk', system-ui, sans-serif; -webkit-font-smoothing: antialiased; overscroll-behavior: none; transition: background 0.3s, color 0.3s; }
@@ -29,7 +32,7 @@
   button, input, select { font-family: inherit; }
   input, select { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--text); font-size: 16px; outline: none; margin-bottom: 12px; }
   input[type="checkbox"] { width: auto; margin-right: 8px; transform: scale(1.2); }
-  .btn { width: 100%; padding: 14px 16px; border-radius: 12px; border: none; background: var(--surface-2); color: var(--text); font-size: 15px; font-weight: 600; cursor: pointer; transition: background .15s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn { width: 100%; padding: 14px 16px; border-radius: 12px; border: none; background: var(--surface-2); color: var(--text); font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
   .btn-primary { background: var(--accent); color: #1A1300; }
   .btn-danger { background: var(--warn); color: white; }
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -53,34 +56,39 @@
 <body>
 <div id="root"></div>
 
-<!-- 1. Firebase Módulos Nativos -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, collection, addDoc, updateDoc, doc, setDoc, getDoc, onSnapshot, query, orderBy, limit, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+<!-- Firebase Modular via CDN -->
+<script>
+(async function () {
+  const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+  const { getAuth, signInAnonymously, signOut, onAuthStateChanged } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
+  const { getFirestore, collection, addDoc, updateDoc, doc, setDoc, getDoc, onSnapshot, query, orderBy, limit, serverTimestamp, deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
 
-  const app = initializeApp({
+  const firebaseConfig = {
     apiKey: "AIzaSyCGaXoU3iXHgR2uX31bIuE43CFGkY4YaRc",
     authDomain: "ponto-onda-eletrica.firebaseapp.com",
     projectId: "ponto-onda-eletrica",
     storageBucket: "ponto-onda-eletrica.firebasestorage.app",
     messagingSenderId: "276041404701",
     appId: "1:276041404701:web:35951f8f473c2c182b91f4"
-  });
+  };
 
+  const app = initializeApp(firebaseConfig);
   window.fb = {
-    auth: getAuth(app), db: getFirestore(app), signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged,
-    collection, addDoc, updateDoc, doc, setDoc, getDoc, deleteDoc, onSnapshot, query, orderBy, limit, serverTimestamp
+    auth: getAuth(app), db: getFirestore(app),
+    signInAnonymously, signOut, onAuthStateChanged,
+    collection, addDoc, updateDoc, doc, setDoc, getDoc, deleteDoc,
+    onSnapshot, query, orderBy, limit, serverTimestamp
   };
   window.dispatchEvent(new Event("fb-ready"));
+})();
 </script>
 
-<!-- 2. Bibliotecas React e Babel -->
+<!-- Scripts do React e Babel -->
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"></script>
 
-<!-- 3. Configuração Clássica do Babel (Evita o erro de import) -->
+<!-- FIX BABEL: Força uso do React Clássico -->
 <script>
   if (window.Babel) {
     window.Babel.registerPreset('react-classico', {
@@ -89,20 +97,20 @@
   }
 </script>
 
-<!-- 4. Código do Aplicativo -->
 <script type="text/babel" data-presets="react-classico">
 /** @jsx React.createElement */
 /** @jsxFrag React.Fragment */
 const { useState, useEffect, useRef, useMemo } = React;
 
-const DOMINIO_PERMITIDO = "@ufba.br";
+// --- CONFIGURAÇÕES ---
 const GESTOES = ["Gestão de Pessoas", "Gestão de Finanças", "Gestão de Marketing & Comunicação", "Gestão de Projetos", "Gestão de Extensão"];
 const META_EFETIVO_SEMANA = 16 * 3600; 
 const META_COLAB_SEMANA = 8 * 3600;
 const META_EFETIVO_MES = 64 * 3600;
 const META_COLAB_MES = 32 * 3600;
 
-const fmtHMS = (s) => `${String(Math.floor(s/3600)).padStart(2,'0')}:${String(Math.floor((s%3600)/60)).padStart(2,'0')}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+// --- UTILIDADES ---
+const fmtHMS = (s) => { const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sc=Math.floor(s%60); return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sc).padStart(2,'0')}`; };
 const fmtHM = (s) => `${Math.floor(s/3600)}h${String(Math.floor((s%3600)/60)).padStart(2,'0')}`;
 const startOfWeek = (d) => { const x=new Date(d); x.setHours(0,0,0,0); x.setDate(x.getDate() - x.getDay()); return x; };
 const startOfMonth = (d) => { const x=new Date(d.getFullYear(), d.getMonth(), 1); x.setHours(0,0,0,0); return x; };
@@ -115,8 +123,7 @@ function compressImage(file, callback) {
       const canvas = document.createElement("canvas");
       const size = Math.min(img.width, img.height, 400); 
       canvas.width = size; canvas.height = size;
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(img, (img.width-size)/2, (img.height-size)/2, size, size, 0, 0, size, size);
+      canvas.getContext("2d").drawImage(img, (img.width-size)/2, (img.height-size)/2, size, size, 0, 0, size, size);
       callback(canvas.toDataURL("image/jpeg", 0.6)); 
     };
     img.src = e.target.result;
@@ -124,26 +131,497 @@ function compressImage(file, callback) {
   reader.readAsDataURL(file);
 }
 
+// --- ÍCONES SVG ---
 const Icons = {
-  Clock: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
-  List: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>,
-  Trophy: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>,
-  Chat: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
-  Users: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
-  Trash: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>,
-  Sun: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>,
-  Moon: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>,
-  Send: () => <svg width="20" height="O erro na imagem revela exatamente o que aconteceu: **um erro de copiar e colar.** 
+  Clock: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>,
+  List: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>,
+  Trophy: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 010-5H6m12 5h1.5a2.5 2.5 0 000-5H18m-14 13h16m-10-7.34V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22m4-7.34V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22M18 2H6v7a6 6 0 0012 0V2z"/></svg>,
+  Chat: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>,
+  Users: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2m4-14a4 4 0 100-8 4 4 0 000 8zm14 14v-2a4 4 0 00-3-3.87m-4-11.13a4 4 0 010 7.75"/></svg>,
+  Trash: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>,
+  Sun: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>,
+  Moon: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>,
+  Send: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+};
 
-Se você olhar a linha vermelha no seu print (`Unexpected token`), vai ver que tem a palavra ` ```html ` e o começo de um novo `<!DOCTYPE html>` perdidos bem no meio do código do ícone `Send`. Isso significa que, na hora de copiar da minha resposta anterior, você acabou copiando a formatação de texto do chat (os acentos graves que formam os blocos de código) e colou tudo misturado dentro do arquivo. Isso "quebrou" a leitura do navegador, causando todos esses erros vermelhos.
+const Avatar = ({ user, size="md" }) => {
+  const cls = size==="lg" ? "avatar avatar-lg" : "avatar";
+  if(user?.photoBase64) return <img src={user.photoBase64} className={cls} />;
+  return <div className={cls}>{user?.name?.charAt(0).toUpperCase() || "?"}</div>;
+};
 
-Para resolver isso e ter o app definitivo rodando com **Login do Google, todas as novas funções e a correção do Babel**, vamos fazer uma limpa total.
+// --- COMPONENTES ---
+function Modal({ title, onClose, children }) {
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={e=>e.stopPropagation()}>
+        <div style={{display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16}}>
+          <h3 style={{margin:0, fontSize:18}}>{title}</h3>
+          <button onClick={onClose} style={{background:"none", border:"none", color:"var(--text)", fontSize:20, cursor:"pointer"}}>×</button>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}
 
-Siga estes passos com muita atenção:
+function LoginScreen({ onEnter, busy }) {
+  const [name, setName] = useState("");
+  const [role, setRole] = useState("Membro Efetivo");
+  const [myGestoes, setMyGestoes] = useState([]);
+  const [photoBase64, setPhotoBase64] = useState(null);
 
-1. Vá no seu repositório no GitHub e edite o arquivo `index.html`.
-2. Clique dentro da caixa de código, aperte **`Ctrl + A`** para selecionar absolutamente tudo e apague. O arquivo deve ficar **100% em branco**.
-3. No bloco de código abaixo, clique no botão **"Copy code"** (Copiar código) que aparece no canto superior direito do bloco aqui no chat. *Não selecione o texto com o mouse para evitar copiar formatação junto.*
-4. Cole o código no GitHub e clique em **Commit changes**.
+  const toggleGestao = (g) => setMyGestoes(p => p.includes(g) ? p.filter(x=>x!==g) : [...p, g]);
+  const handleFile = (e) => { if(e.target.files[0]) compressImage(e.target.files[0], setPhotoBase64); };
 
-Aqui está o código final, perfeito e unificado:
+  const submit = () => {
+    if(!name.trim()) return alert("Digite seu nome!");
+    onEnter({ name: name.trim(), role, gestoes: myGestoes, photoBase64 });
+  };
+
+  return (
+    <div className="fade-in" style={{flex:1, padding:"32px 24px", overflowY:"auto"}}>
+      <div style={{marginBottom:24}}>
+        <h1 style={{fontSize:30, fontWeight:700, margin:0, lineHeight:1.15}}>Onda Elétrica</h1>
+        <p style={{color:"var(--text-muted)", marginTop:8}}>Configure seu perfil para acessar o ponto.</p>
+      </div>
+      <div style={{display:"flex", alignItems:"center", gap:16, marginBottom:20}}>
+        <Avatar user={{photoBase64, name}} size="lg" />
+        <div><label style={{fontSize:14, color:"var(--accent)", cursor:"pointer", fontWeight:600}}>+ Escolher foto<input type="file" accept="image/*" onChange={handleFile} style={{display:"none"}}/></label></div>
+      </div>
+      <label style={{fontSize:13, color:"var(--text-muted)", marginBottom:6, display:"block"}}>Seu Nome Completo</label>
+      <input value={name} onChange={e=>setName(e.target.value)} placeholder="Nome completo" />
+      <label style={{fontSize:13, color:"var(--text-muted)", marginBottom:6, display:"block", marginTop:12}}>Vínculo</label>
+      <select value={role} onChange={e=>setRole(e.target.value)}><option>Membro Efetivo</option><option>Colaborador</option></select>
+      <label style={{fontSize:13, color:"var(--text-muted)", marginBottom:6, display:"block", marginTop:12}}>Suas Gestões (pode escolher várias)</label>
+      <div style={{background:"var(--surface)", padding:12, borderRadius:12, border:"1px solid var(--line)", marginBottom:24}}>
+        {GESTOES.map(g => (
+          <label key={g} style={{display:"flex", alignItems:"center", marginBottom:10, fontSize:14, cursor:"pointer"}}>
+            <input type="checkbox" checked={myGestoes.includes(g)} onChange={()=>toggleGestao(g)} />{g}
+          </label>
+        ))}
+      </div>
+      <button className="btn btn-primary" onClick={submit} disabled={busy || !name.trim()}>{busy ? "Entrando..." : "Entrar no App"}</button>
+    </div>
+  );
+}
+
+function PontoTab({ user, users, activeSession, activeGroupCount, elapsed, onStart, onStop, onManualAdd, onDeleteSession, sessions, busy }) {
+  const running = !!activeSession;
+  const [showGroupModal, setShowGroupModal] = useState(false);
+  const [showManualModal, setShowManualModal] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState([]);
+  const [mStart, setMStart] = useState("");
+  const [mEnd, setMEnd] = useState("");
+
+  const myTodaySecs = useMemo(() => {
+    const today = startOfWeek(new Date()); today.setHours(0,0,0,0);
+    return sessions.filter(s => s.uid === user.uid && s.endTime && new Date(s.startTime) >= new Date(new Date().setHours(0,0,0,0))).reduce((a,b)=>a+b.durationSeconds, 0);
+  }, [sessions, user]);
+
+  const recentSessions = useMemo(() => sessions.filter(s => s.uid === user.uid && s.endTime).slice(0,5), [sessions, user]);
+
+  const handleStartGroup = () => { onStart(selectedGroup); setShowGroupModal(false); };
+  const handleSaveManual = () => {
+    if(!mStart || !mEnd) return alert("Preencha as datas.");
+    const sTime = new Date(mStart).getTime(); const eTime = new Date(mEnd).getTime();
+    if(eTime <= sTime) return alert("Fim deve ser maior que Início.");
+    onManualAdd(new Date(sTime).toISOString(), new Date(eTime).toISOString(), Math.floor((eTime-sTime)/1000));
+    setShowManualModal(false);
+  };
+  const askDelete = (id) => { if(window.confirm("Deseja apagar essa sessão?")) onDeleteSession(id); };
+
+  return (
+    <div className="fade-in" style={{flex:1, display:"flex", flexDirection:"column", alignItems:"center", padding:"24px 20px", overflowY:"auto"}}>
+      <div style={{position:"relative", display:"flex", justifyContent:"center", alignItems:"center", margin:"20px 0 40px"}}>
+        <button disabled={busy} onClick={running ? onStop : () => onStart([])} style={{ width:200, height:200, borderRadius:"50%", border:"none", cursor:"pointer", background: running ? "radial-gradient(circle at 30% 30%, #ff7a4d, var(--warn))" : "radial-gradient(circle at 30% 30%, #ffd35c, var(--accent))", color: running ? "white" : "#1A1300", boxShadow: running ? "0 0 0 12px rgba(228,87,46,0.15)" : "0 0 0 12px rgba(242,183,5,0.15)", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", transition:"all .3s" }}>
+          <div className="mono" style={{fontSize:42, fontWeight:700, letterSpacing:1}}>{fmtHMS(elapsed)}</div>
+          <div style={{fontSize:14, fontWeight:600, opacity:0.8, marginTop:4}}>{running ? "PARAR" : "INICIAR"}</div>
+          {running && activeGroupCount > 0 && <div style={{fontSize:12, opacity:0.9, marginTop:8}}>Você + {activeGroupCount} pessoa(s)</div>}
+        </button>
+      </div>
+
+      {!running && (
+        <div style={{display:"flex", gap:10, width:"100%", marginBottom:30}}>
+          <button className="btn" onClick={()=>setShowGroupModal(true)} style={{flex:1, fontSize:13}}><Icons.Users/> Iniciar Grupo</button>
+          <button className="btn" onClick={()=>setShowManualModal(true)} style={{flex:1, fontSize:13}}><Icons.Clock/> Esqueci de Bater</button>
+        </div>
+      )}
+
+      <div style={{width:"100%"}}>
+        <div style={{fontSize:13, color:"var(--text-muted)", marginBottom:10}}>Hoje: <span className="mono" style={{color:"var(--text)", fontWeight:600}}>{fmtHM(myTodaySecs + (running?elapsed:0))}</span></div>
+        {recentSessions.length === 0 && <div style={{fontSize:13, color:"var(--text-muted)"}}>Nenhum registro recente.</div>}
+        {recentSessions.map(s => {
+          const dt = new Date(s.startTime);
+          return (
+            <div key={s.id} style={{display:"flex", justifyContent:"space-between", alignItems:"center", background:"var(--surface)", padding:"12px 14px", borderRadius:12, marginBottom:8, border:"1px solid var(--line)"}}>
+              <div>
+                <div style={{fontSize:14, fontWeight:500}}>{dt.toLocaleDateString("pt-BR")}</div>
+                <div style={{fontSize:12, color:"var(--text-muted)"}}>{dt.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})} — {fmtHM(s.durationSeconds)}</div>
+              </div>
+              <button onClick={()=>askDelete(s.id)} style={{background:"none", border:"none", color:"var(--warn)", cursor:"pointer", padding:8}}><Icons.Trash/></button>
+            </div>
+          );
+        })}
+      </div>
+
+      {showGroupModal && (
+        <Modal title="Trabalho em Grupo" onClose={()=>setShowGroupModal(false)}>
+          <p style={{fontSize:13, color:"var(--text-muted)", marginBottom:16}}>Selecione quem está trabalhando com você agora.</p>
+          <div style={{maxHeight:250, overflowY:"auto", marginBottom:16, border:"1px solid var(--line)", borderRadius:12, padding:10}}>
+            {users.filter(u=>u.uid !== user.uid).map(u => (
+              <label key={u.uid} style={{display:"flex", alignItems:"center", padding:"8px 0", cursor:"pointer", borderBottom:"1px solid var(--line)"}}>
+                <input type="checkbox" checked={selectedGroup.includes(u.uid)} onChange={(e)=>{ if(e.target.checked) setSelectedGroup([...selectedGroup, u.uid]); else setSelectedGroup(selectedGroup.filter(x=>x!==u.uid)); }}/>
+                <Avatar user={u} /><span style={{marginLeft:10, fontSize:14}}>{u.name}</span>
+              </label>
+            ))}
+          </div>
+          <button className="btn btn-primary" onClick={handleStartGroup} disabled={selectedGroup.length===0}>Iniciar para {selectedGroup.length+1} pessoas</button>
+        </Modal>
+      )}
+
+      {showManualModal && (
+        <Modal title="Adicionar Registro Antigo" onClose={()=>setShowManualModal(false)}>
+          <label style={{fontSize:13, display:"block", marginBottom:4}}>Início do trabalho</label>
+          <input type="datetime-local" value={mStart} onChange={e=>setMStart(e.target.value)} />
+          <label style={{fontSize:13, display:"block", marginBottom:4, marginTop:10}}>Fim do trabalho</label>
+          <input type="datetime-local" value={mEnd} onChange={e=>setMEnd(e.target.value)} />
+          <button className="btn btn-primary" style={{marginTop:16}} onClick={handleSaveManual}>Salvar Horas</button>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+function MuralTab({events}) {
+  return (
+    <div className="fade-in" style={{flex:1, padding:"20px", overflowY:"auto"}}>
+      <h2 style={{fontSize:20, marginTop:0, marginBottom:16}}>Mural da Equipe</h2>
+      {events.length === 0 ? <p style={{color:"var(--text-muted)", fontSize:14}}>Silêncio por aqui...</p> : null}
+      <div style={{display:"flex", flexDirection:"column", gap:10}}>
+        {events.map(ev => (
+          <div key={ev.id} style={{display:"flex", gap:12, background:"var(--surface)", border:"1px solid var(--line)", borderRadius:12, padding:"14px"}}>
+            <div style={{width:10, height:10, borderRadius:"50%", marginTop:5, flexShrink:0, background: ev.type==="start" ? "var(--live)" : "var(--warn)"}}/>
+            <div>
+              <div style={{fontSize:14.5, lineHeight:1.4}}>
+                <strong>{ev.names}</strong> {ev.type === "start" ? (ev.names.includes(",")?"começaram a trabalhar":"começou a trabalhar") : (ev.names.includes(",")?"pararam o ponto":"parou o ponto")}
+                {ev.type === "stop" && ev.durationSeconds ? ` (${fmtHM(ev.durationSeconds)})` : ""}
+              </div>
+              <div className="mono" style={{fontSize:11.5, color:"var(--text-muted)", marginTop:4}}>{ev.timeLabel}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function RankingTab({sessions, users, user, activeSession, elapsed}) {
+  const [period, setPeriod] = useState("semana");
+  
+  const range = useMemo(()=>{
+    const now = new Date();
+    if(period === "semana") return { start: startOfWeek(now) };
+    if(period === "mes") return { start: startOfMonth(now) };
+    return { start: new Date(2000,0,1) };
+  }, [period]);
+
+  const totals = useMemo(()=>{
+    const map = {};
+    users.forEach(u => map[u.uid] = { name: u.name, role: u.role, photo: u.photoBase64, seconds: 0 });
+    for(const s of sessions){
+      if(!s.endTime || new Date(s.startTime) < range.start) continue;
+      if(map[s.uid]) map[s.uid].seconds += s.durationSeconds;
+    }
+    if(activeSession && map[user.uid]) map[user.uid].seconds += elapsed;
+    return Object.entries(map).map(([uid, v]) => ({ uid, ...v })).sort((a,b) => b.seconds - a.seconds);
+  }, [sessions, range, users, activeSession, elapsed, user]);
+
+  const getPill = (k, label) => (
+    <button onClick={()=>setPeriod(k)} style={{ padding:"8px 14px", borderRadius:20, fontSize:13, border:"1px solid var(--line)", cursor:"pointer", background: period===k ? "var(--accent)" : "var(--surface)", color: period===k ? "#1A1300" : "var(--text-muted)", fontWeight: period===k ? 600 : 500 }}>{label}</button>
+  );
+
+  return (
+    <div className="fade-in" style={{flex:1, padding:"20px", overflowY:"auto"}}>
+      <div style={{display:"flex", gap:8, marginBottom:20}}>
+        {getPill("semana", "Semana")} {getPill("mes", "Mês")} {getPill("tudo", "Tudo")}
+      </div>
+      <div style={{display:"flex", flexDirection:"column", gap:8}}>
+        {totals.map((t, i) => {
+          const isEfetivo = t.role === "Membro Efetivo";
+          const goal = period==="semana" ? (isEfetivo?META_EFETIVO_SEMANA:META_COLAB_SEMANA) : (period==="mes" ? (isEfetivo?META_EFETIVO_MES:META_COLAB_MES) : null);
+          const progress = goal ? Math.min(100, (t.seconds/goal)*100) : 0;
+          return (
+            <div key={t.uid} style={{display:"flex", alignItems:"center", gap:12, background: t.uid===user.uid ? "var(--accent-soft)" : "var(--surface)", border:"1px solid var(--line)", borderRadius:12, padding:"12px"}}>
+              <div className="mono" style={{width:20, textAlign:"center", color:"var(--text-muted)", fontSize:12, fontWeight:i<3?700:400}}>{i+1}</div>
+              <Avatar user={{photoBase64:t.photo, name:t.name}} size="sm" />
+              <div style={{flex:1, overflow:"hidden"}}>
+                <div style={{fontSize:14, fontWeight:500, whiteSpace:"nowrap", textOverflow:"ellipsis", overflow:"hidden"}}>{t.name}</div>
+                {goal && (
+                  <div style={{height:4, background:"var(--surface-2)", borderRadius:2, marginTop:6, overflow:"hidden"}}>
+                    <div style={{height:"100%", width:`${progress}%`, background: progress>=100 ? "var(--live)" : "var(--accent)"}}/>
+                  </div>
+                )}
+              </div>
+              <div className="mono" style={{fontSize:14, fontWeight:600}}>{fmtHM(t.seconds)}</div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function ChatTab({user, chatMsgs, onSend}) {
+  const [text, setText] = useState("");
+  const endRef = useRef(null);
+
+  useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [chatMsgs]);
+
+  const send = (e) => { e.preventDefault(); if(!text.trim()) return; onSend(text.trim()); setText(""); };
+
+  return (
+    <div className="fade-in" style={{flex:1, display:"flex", flexDirection:"column", overflow:"hidden", background:"var(--surface)"}}>
+      <div style={{flex:1, overflowY:"auto", padding:"20px", display:"flex", flexDirection:"column", gap:12}}>
+        {chatMsgs.slice().reverse().map(m => {
+          const isMe = m.uid === user.uid;
+          return (
+            <div key={m.id} style={{display:"flex", gap:8, flexDirection: isMe?"row-reverse":"row", alignItems:"flex-end"}}>
+              {!isMe && <Avatar user={{name:m.name, photoBase64:m.photo}} />}
+              <div style={{display:"flex", flexDirection:"column", alignItems: isMe?"flex-end":"flex-start", maxWidth:"80%"}}>
+                {!isMe && <span style={{fontSize:11, color:"var(--text-muted)", marginBottom:4, marginLeft:4}}>{m.name}</span>}
+                <div className={isMe ? "chat-bubble chat-mine" : "chat-bubble chat-other"}>{m.text}</div>
+              </div>
+            </div>
+          );
+        })}
+        <div ref={endRef} />
+      </div>
+      <form onSubmit={send} style={{padding:"12px 16px", background:"var(--bg)", borderTop:"1px solid var(--line)", display:"flex", gap:10, paddingBottom:"calc(12px + env(safe-area-inset-bottom))"}}>
+        <input value={text} onChange={e=>setText(e.target.value)} placeholder="Mensagem..." style={{margin:0, flex:1, borderRadius:20}} />
+        <button type="submit" style={{width:46, height:46, borderRadius:"50%", border:"none", background:"var(--accent)", color:"#1A1300", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0}}><Icons.Send/></button>
+      </form>
+    </div>
+  );
+}
+
+function MembrosTab({users, me, onRemoveUser}) {
+  const [modalUser, setModalUser] = useState(null);
+  const [keyword, setKeyword] = useState("");
+
+  const efetivos = users.filter(u => u.role === "Membro Efetivo");
+  const colaboradores = users.filter(u => u.role !== "Membro Efetivo");
+  const quorum = Math.ceil(efetivos.length / 2);
+
+  const remove = () => {
+    if(keyword !== "REMOVER") return alert("Palavra-chave incorreta.");
+    onRemoveUser(modalUser.uid); setModalUser(null); setKeyword("");
+  };
+
+  const UserRow = ({u}) => (
+    <div onClick={()=>setModalUser(u)} style={{display:"flex", alignItems:"center", gap:12, padding:"12px 0", borderBottom:"1px solid var(--line)", cursor:"pointer"}}>
+      <Avatar user={u} />
+      <div><div style={{fontSize:15, fontWeight:500}}>{u.name} {u.uid===me.uid?"(Você)":""}</div><div style={{fontSize:12, color:"var(--text-muted)", marginTop:2}}>{u.role}</div></div>
+    </div>
+  );
+
+  return (
+    <div className="fade-in" style={{flex:1, padding:"20px", overflowY:"auto"}}>
+      <div style={{background:"var(--accent-soft)", padding:"12px 16px", borderRadius:12, marginBottom:24, display:"flex", justifyContent:"space-between", alignItems:"center"}}>
+        <span style={{fontSize:14, fontWeight:600}}>Quórum Mínimo:</span><span className="mono" style={{fontSize:20, fontWeight:700, color:"var(--accent)"}}>{quorum}</span>
+      </div>
+      <h3 style={{fontSize:14, color:"var(--text-muted)", textTransform:"uppercase", letterSpacing:1}}>Membros Efetivos ({efetivos.length})</h3>
+      <div style={{marginBottom:24}}>{efetivos.map(u => <UserRow key={u.uid} u={u} />)}</div>
+      <h3 style={{fontSize:14, color:"var(--text-muted)", textTransform:"uppercase", letterSpacing:1}}>Colaboradores ({colaboradores.length})</h3>
+      <div>{colaboradores.map(u => <UserRow key={u.uid} u={u} />)}</div>
+
+      {modalUser && (
+        <Modal title="Perfil" onClose={()=>setModalUser(null)}>
+          <div style={{display:"flex", flexDirection:"column", alignItems:"center", marginBottom:20}}>
+            <Avatar user={modalUser} size="lg" /><h2 style={{margin:"12px 0 4px", fontSize:20}}>{modalUser.name}</h2>
+            <div style={{color:"var(--accent)", fontSize:14, fontWeight:500}}>{modalUser.role}</div>
+          </div>
+          <div style={{background:"var(--surface-2)", borderRadius:12, padding:16, marginBottom:24}}>
+            <h4 style={{margin:"0 0 10px", fontSize:13, color:"var(--text-muted)"}}>GESTÕES</h4>
+            {modalUser.gestoes?.length > 0 ? <ul style={{margin:0, paddingLeft:16, fontSize:14}}>{modalUser.gestoes.map(g => <li key={g} style={{marginBottom:4}}>{g}</li>)}</ul> : <span style={{fontSize:14, opacity:0.6}}>Nenhuma gestão</span>}
+          </div>
+          <div style={{borderTop:"1px solid var(--warn)", paddingTop:16, marginTop:16}}>
+            <p style={{fontSize:13, color:"var(--warn)", margin:"0 0 10px"}}>Deseja apagar esta pessoa? Digite <strong>REMOVER</strong> abaixo:</p>
+            <input value={keyword} onChange={e=>setKeyword(e.target.value.toUpperCase())} placeholder="REMOVER" style={{borderColor:"var(--warn)"}}/>
+            <button className="btn btn-danger" onClick={remove}>Excluir Membro</button>
+          </div>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+function App() {
+  const [fbReady, setFbReady] = useState(!!window.fb);
+  const [user, setUser] = useState(null); 
+  const [dbUser, setDbUser] = useState(null); 
+  
+  const [theme, setTheme] = useState(localStorage.getItem("onda-theme") || "dark");
+  useEffect(() => { document.body.className = theme === "light" ? "theme-light" : ""; localStorage.setItem("onda-theme", theme); }, [theme]);
+
+  const [tab, setTab] = useState("ponto");
+  const [busy, setBusy] = useState(false);
+  const [loginBusy, setLoginBusy] = useState(false);
+  
+  const [users, setUsers] = useState([]);
+  const [sessions, setSessions] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [chatMsgs, setChatMsgs] = useState([]);
+  
+  const [activeSession, setActiveSession] = useState(null);
+  const [elapsed, setElapsed] = useState(0);
+  const [goalShown, setGoalShown] = useState({ week: false, month: false });
+
+  useEffect(() => {
+    const h = () => setFbReady(true); window.addEventListener("fb-ready", h);
+    if(window.fb) setFbReady(true);
+    return () => window.removeEventListener("fb-ready", h);
+  }, []);
+
+  useEffect(() => {
+    if(!fbReady) return;
+    const unsub = window.fb.onAuthStateChanged(window.fb.auth, async (fbUser) => {
+      if(fbUser) {
+        setUser(fbUser);
+        const docSnap = await window.fb.getDoc(window.fb.doc(window.fb.db, "members", fbUser.uid));
+        if(docSnap.exists()) setDbUser(docSnap.data()); else setDbUser(null);
+      } else { setUser(null); setDbUser(null); }
+    });
+    return () => unsub();
+  }, [fbReady]);
+
+  const handleEnter = async (profileData) => {
+    setLoginBusy(true);
+    try {
+      let currentUid = user?.uid;
+      if (!currentUid) {
+        const cred = await window.fb.signInAnonymously(window.fb.auth);
+        currentUid = cred.user.uid;
+      }
+      await window.fb.setDoc(window.fb.doc(window.fb.db, "members", currentUid), { ...profileData, updatedAt: new Date().toISOString() }, {merge:true});
+      setDbUser(profileData);
+    } catch(e) {
+      alert("Erro ao entrar: " + e.message);
+    } finally {
+      setLoginBusy(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    await window.fb.signOut(window.fb.auth);
+  };
+
+  useEffect(() => {
+    if(!fbReady || !user || !dbUser) return;
+    const { db, collection, query, onSnapshot, orderBy, limit } = window.fb;
+    
+    const unsubU = onSnapshot(collection(db, "members"), s => setUsers(s.docs.map(d=>({uid:d.id, ...d.data()}))));
+    const unsubS = onSnapshot(query(collection(db, "sessions"), orderBy("startTime", "desc"), limit(2000)), s => {
+      const all = s.docs.map(d=>({id:d.id, ...d.data()})); setSessions(all);
+      setActiveSession(all.find(x => x.uid === user.uid && x.endTime === null) || null);
+    });
+    const unsubE = onSnapshot(query(collection(db, "events"), orderBy("createdAt", "desc"), limit(40)), s => {
+      setEvents(s.docs.map(d=>{ const data=d.data(); return {id:d.id, ...data, timeLabel: data.createdAt?.toDate().toLocaleString("pt-BR",{hour:"2-digit",minute:"2-digit"})||""} }));
+    });
+    const unsubC = onSnapshot(query(collection(db, "chat"), orderBy("createdAt", "desc"), limit(40)), s => {
+      setChatMsgs(s.docs.map(d=>({id:d.id, ...d.data()})));
+    });
+
+    return () => { unsubU(); unsubS(); unsubE(); unsubC(); };
+  }, [fbReady, user, dbUser]);
+
+  useEffect(() => {
+    if(!activeSession) { setElapsed(0); return; }
+    const id = setInterval(() => setElapsed(Math.floor((Date.now() - new Date(activeSession.startTime).getTime())/1000)), 1000);
+    return () => clearInterval(id);
+  }, [activeSession]);
+
+  useEffect(() => {
+    if(!activeSession || !dbUser) return;
+    const isEfetivo = dbUser.role === "Membro Efetivo";
+    const gW = isEfetivo ? META_EFETIVO_SEMANA : META_COLAB_SEMANA;
+    const gM = isEfetivo ? META_EFETIVO_MES : META_COLAB_MES;
+    const wkSum = sessions.filter(s => s.uid === user.uid && s.endTime && new Date(s.startTime) >= startOfWeek(new Date())).reduce((a,b)=>a+b.durationSeconds, 0);
+    const moSum = sessions.filter(s => s.uid === user.uid && s.endTime && new Date(s.startTime) >= startOfMonth(new Date())).reduce((a,b)=>a+b.durationSeconds, 0);
+
+    if (wkSum + elapsed === gW && !goalShown.week) { alert("🎉 META SEMANAL ATINGIDA! Bom trabalho!"); setGoalShown(p=>({...p, week:true})); }
+    if (moSum + elapsed === gM && !goalShown.month) { alert("🏆 META MENSAL ATINGIDA! Você é incrível!"); setGoalShown(p=>({...p, month:true})); }
+  }, [elapsed, sessions, activeSession, dbUser, goalShown, user]);
+
+  const startSession = async (otherUids = []) => {
+    setBusy(true);
+    const startTime = new Date().toISOString(); const groupUids = [user.uid, ...otherUids];
+    const groupNames = groupUids.map(id => users.find(u=>u.uid===id)?.name || "Alguém").join(", ");
+    const groupId = "grp_" + Date.now();
+    for(const uid of groupUids) await window.fb.addDoc(window.fb.collection(window.fb.db, "sessions"), { uid, groupId, startTime, endTime: null, durationSeconds: null });
+    await window.fb.addDoc(window.fb.collection(window.fb.db, "events"), { uids: groupUids, names: groupNames, type: "start", createdAt: window.fb.serverTimestamp() });
+    setBusy(false);
+  };
+
+  const stopSession = async () => {
+    if(!activeSession) return; setBusy(true);
+    const endTime = new Date().toISOString(); const durationSeconds = Math.floor((new Date(endTime) - new Date(activeSession.startTime))/1000);
+    await window.fb.updateDoc(window.fb.doc(window.fb.db, "sessions", activeSession.id), { endTime, durationSeconds });
+    await window.fb.addDoc(window.fb.collection(window.fb.db, "events"), { uids: [user.uid], names: dbUser.name, type: "stop", durationSeconds, createdAt: window.fb.serverTimestamp() });
+    setBusy(false);
+  };
+
+  const addManualSession = async (startTime, endTime, durationSeconds) => {
+    setBusy(true); await window.fb.addDoc(window.fb.collection(window.fb.db, "sessions"), { uid: user.uid, startTime, endTime, durationSeconds }); setBusy(false);
+  };
+
+  const deleteSession = async (id) => {
+    setBusy(true); await window.fb.deleteDoc(window.fb.doc(window.fb.db, "sessions", id)); setBusy(false);
+  };
+
+  const removeUser = async (uid) => {
+    await window.fb.deleteDoc(window.fb.doc(window.fb.db, "members", uid));
+    if(uid === user.uid) { await handleLogout(); setDbUser(null); }
+  };
+
+  const sendChat = async (text) => {
+    await window.fb.addDoc(window.fb.collection(window.fb.db, "chat"), { uid: user.uid, name: dbUser.name, photo: dbUser.photoBase64||null, text, createdAt: window.fb.serverTimestamp() });
+  };
+
+  if(!fbReady) return <div style={{flex:1, display:"flex", alignItems:"center", justifyContent:"center"}}>Carregando sistema...</div>;
+  if(!dbUser) return <LoginScreen onEnter={handleEnter} busy={loginBusy} />;
+
+  const activeGroupCount = activeSession?.groupId ? sessions.filter(s => s.groupId === activeSession.groupId && s.endTime === null).length - 1 : 0;
+
+  return (
+    <>
+      <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", padding:"14px 20px", borderBottom:"1px solid var(--line)", background:"var(--surface-2)"}}>
+        <div style={{display:"flex", alignItems:"center", gap:10}}>
+          <Avatar user={dbUser} />
+          <div><span style={{fontWeight:700, fontSize:15, display:"block"}}>{dbUser.name}</span><span style={{fontSize:11, color:"var(--text-muted)", textTransform:"uppercase", letterSpacing:0.5}}>{dbUser.role}</span></div>
+        </div>
+        <div style={{display:"flex", gap:8}}>
+          <button onClick={()=>setTheme(theme==="dark"?"light":"dark")} style={{background:"none", border:"none", color:"var(--text)", cursor:"pointer", padding:8}}>{theme==="dark"?<Icons.Sun/>:<Icons.Moon/>}</button>
+          <button onClick={handleLogout} style={{background:"none", border:"none", color:"var(--warn)", cursor:"pointer", padding:8, fontSize:12, fontWeight:600}}>Sair</button>
+        </div>
+      </div>
+      {tab === "ponto" && <PontoTab user={user} users={users} sessions={sessions} activeSession={activeSession} activeGroupCount={activeGroupCount} elapsed={elapsed} onStart={startSession} onStop={stopSession} onManualAdd={addManualSession} onDeleteSession={deleteSession} busy={busy} />}
+      {tab === "mural" && <MuralTab events={events} />}
+      {tab === "ranking" && <RankingTab sessions={sessions} users={users} user={user} activeSession={activeSession} elapsed={elapsed} />}
+      {tab === "chat" && <ChatTab user={user} chatMsgs={chatMsgs} onSend={sendChat} />}
+      {tab === "membros" && <MembrosTab users={users} me={user} onRemoveUser={removeUser} />}
+      <div className="bottom-nav">
+        <button className={tab==="ponto"?"active":""} onClick={()=>setTab("ponto")}><Icons.Clock/> Ponto</button>
+        <button className={tab==="mural"?"active":""} onClick={()=>setTab("mural")}><Icons.List/> Mural</button>
+        <button className={tab==="ranking"?"active":""} onClick={()=>setTab("ranking")}><Icons.Trophy/> Ranking</button>
+        <button className={tab==="chat"?"active":""} onClick={()=>setTab("chat")}><Icons.Chat/> Chat</button>
+        <button className={tab==="membros"?"active":""} onClick={()=>setTab("membros")}><Icons.Users/> Equipe</button>
+      </div>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
