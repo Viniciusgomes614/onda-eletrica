@@ -4,96 +4,47 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Onda Elétrica · Ponto</title>
-
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <link rel="manifest" href="manifest.json" />
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-
 <style>
   :root {
-    --bg: #0F1B2D;
-    --surface: #16233A;
-    --surface-2: #1D2C47;
-    --line: rgba(234,240,246,0.08);
-    --accent: #F2B705; 
-    --accent-soft: rgba(242,183,5,0.14);
-    --live: #3FD8C4;
-    --warn: #E4572E;
-    --text: #EAF0F6;
-    --text-muted: #8FA0BC;
-    --modal-bg: rgba(15, 27, 45, 0.85);
+    --bg:#0F1B2D; --surface:#16233A; --surface-2:#1D2C47; --line:rgba(234,240,246,0.08);
+    --accent:#F2B705; --accent-soft:rgba(242,183,5,0.14); --live:#3FD8C4; --warn:#E4572E;
+    --text:#EAF0F6; --text-muted:#8FA0BC; --modal-bg:rgba(15,27,45,0.85);
   }
-
   .theme-light {
-    --bg: #F4F7F9;
-    --surface: #FFFFFF;
-    --surface-2: #E8EEF2;
-    --line: rgba(15, 27, 45, 0.1);
-    --accent: #F2B705; 
-    --accent-soft: rgba(242,183,5,0.25);
-    --live: #00BFA5;
-    --warn: #D32F2F;
-    --text: #0F1B2D;
-    --text-muted: #5C6E8A;
-    --modal-bg: rgba(244, 247, 249, 0.85);
+    --bg:#F4F7F9; --surface:#FFFFFF; --surface-2:#E8EEF2; --line:rgba(15,27,45,0.1);
+    --accent:#F2B705; --accent-soft:rgba(242,183,5,0.25); --live:#00BFA5; --warn:#D32F2F;
+    --text:#0F1B2D; --text-muted:#5C6E8A; --modal-bg:rgba(244,247,249,0.85);
   }
-
   * { box-sizing: border-box; }
-  html, body { height: 100%; }
-  body {
-    margin: 0; background: var(--bg); color: var(--text);
-    font-family: 'Space Grotesk', system-ui, sans-serif;
-    -webkit-font-smoothing: antialiased; overscroll-behavior: none;
-    transition: background 0.3s, color 0.3s;
-  }
+  html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text); font-family: 'Space Grotesk', system-ui, sans-serif; -webkit-font-smoothing: antialiased; overscroll-behavior: none; transition: background 0.3s, color 0.3s; }
   .mono { font-family: 'JetBrains Mono', monospace; }
   #root { min-height: 100vh; display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; position: relative; }
-  
   ::selection { background: var(--accent-soft); }
   button, input, select { font-family: inherit; }
-  input, select { 
-    width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line);
-    background: var(--surface); color: var(--text); font-size: 16px; outline: none; margin-bottom: 12px;
-  }
+  input, select { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--text); font-size: 16px; outline: none; margin-bottom: 12px; }
   input[type="checkbox"] { width: auto; margin-right: 8px; transform: scale(1.2); }
-  
-  .btn {
-    width: 100%; padding: 14px 16px; border-radius: 12px; border: none;
-    background: var(--surface-2); color: var(--text); font-size: 15px; font-weight: 600; cursor: pointer;
-    transition: background .15s; display: flex; align-items: center; justify-content: center; gap: 8px;
-  }
+  .btn { width: 100%; padding: 14px 16px; border-radius: 12px; border: none; background: var(--surface-2); color: var(--text); font-size: 15px; font-weight: 600; cursor: pointer; transition: background .15s; display: flex; align-items: center; justify-content: center; gap: 8px; }
   .btn-primary { background: var(--accent); color: #1A1300; }
   .btn-danger { background: var(--warn); color: white; }
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
   .fade-in { animation: fadeIn .35s ease both; }
   @keyframes fadeIn { from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:translateY(0)} }
-  
-  .modal-overlay {
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 100;
-    background: var(--modal-bg); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; padding: 20px;
-    animation: fadeIn .2s ease;
-  }
-  .modal-content {
-    background: var(--bg); border: 1px solid var(--line); border-radius: 20px;
-    padding: 24px; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; box-shadow: 0 12px 32px rgba(0,0,0,0.2);
-  }
-
+  .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 100; background: var(--modal-bg); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; padding: 20px; animation: fadeIn .2s ease; }
+  .modal-content { background: var(--bg); border: 1px solid var(--line); border-radius: 20px; padding: 24px; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; box-shadow: 0 12px 32px rgba(0,0,0,0.2); }
   .avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; background: var(--surface-2); display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
   .avatar-lg { width: 80px; height: 80px; font-size: 24px; }
-  
   .toast-in { animation: toastIn .4s cubic-bezier(.2,.9,.3,1) both; }
   @keyframes toastIn { from{opacity:0; transform:translateY(-20px) scale(.95)} to{opacity:1; transform:translateY(0) scale(1)} }
-  
   .scrollbar-none::-webkit-scrollbar { display: none; }
   .bottom-nav { border-top: 1px solid var(--line); background: var(--surface-2); padding-bottom: env(safe-area-inset-bottom); display: flex; }
   .bottom-nav button { flex: 1; padding: 12px 0; background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 11px; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 4px; }
   .bottom-nav button.active { color: var(--accent); }
-  
   .chat-bubble { padding: 10px 14px; border-radius: 16px; font-size: 14.5px; max-width: 85%; word-wrap: break-word; line-height: 1.4; }
   .chat-mine { background: var(--accent-soft); border-bottom-right-radius: 4px; align-self: flex-end; }
   .chat-other { background: var(--surface-2); border-bottom-left-radius: 4px; align-self: flex-start; }
@@ -102,66 +53,56 @@
 <body>
 <div id="root"></div>
 
-<!-- Firebase Modular (Formato Limpo Nativo) -->
+<!-- 1. Firebase Módulos Nativos -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, collection, addDoc, updateDoc, doc, setDoc, getDoc, onSnapshot, query, orderBy, limit, serverTimestamp, where, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, updateDoc, doc, setDoc, getDoc, onSnapshot, query, orderBy, limit, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  const firebaseConfig = {
+  const app = initializeApp({
     apiKey: "AIzaSyCGaXoU3iXHgR2uX31bIuE43CFGkY4YaRc",
     authDomain: "ponto-onda-eletrica.firebaseapp.com",
     projectId: "ponto-onda-eletrica",
     storageBucket: "ponto-onda-eletrica.firebasestorage.app",
     messagingSenderId: "276041404701",
     appId: "1:276041404701:web:35951f8f473c2c182b91f4"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+  });
 
   window.fb = {
-    auth, db, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged,
-    collection, addDoc, updateDoc, doc, setDoc, getDoc, deleteDoc,
-    onSnapshot, query, orderBy, limit, serverTimestamp, where
+    auth: getAuth(app), db: getFirestore(app), signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged,
+    collection, addDoc, updateDoc, doc, setDoc, getDoc, deleteDoc, onSnapshot, query, orderBy, limit, serverTimestamp
   };
   window.dispatchEvent(new Event("fb-ready"));
 </script>
 
-<!-- Bibliotecas do React e Babel -->
+<!-- 2. Bibliotecas React e Babel -->
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"></script>
 
-<!-- TRAVA DE SEGURANÇA DO BABEL: Força uso do React Clássico -->
+<!-- 3. Configuração Clássica do Babel (Evita o erro de import) -->
 <script>
   if (window.Babel) {
     window.Babel.registerPreset('react-classico', {
-      presets: [
-        [window.Babel.availablePresets['react'], { "runtime": "classic" }]
-      ]
+      presets: [[window.Babel.availablePresets['react'], { "runtime": "classic" }]]
     });
   }
 </script>
 
-<!-- Início do App React -->
+<!-- 4. Código do Aplicativo -->
 <script type="text/babel" data-presets="react-classico">
 /** @jsx React.createElement */
 /** @jsxFrag React.Fragment */
-const { useState, useEffect, useRef, useMemo, useCallback } = React;
+const { useState, useEffect, useRef, useMemo } = React;
 
-// --- CONFIGURAÇÕES ONDA ELÉTRICA ---
-const DOMINIO_PERMITIDO = "@ufba.br"; // MUDE AQUI PARA O DOMÍNIO DA SUA EQUIPE
-
+const DOMINIO_PERMITIDO = "@ufba.br";
 const GESTOES = ["Gestão de Pessoas", "Gestão de Finanças", "Gestão de Marketing & Comunicação", "Gestão de Projetos", "Gestão de Extensão"];
 const META_EFETIVO_SEMANA = 16 * 3600; 
 const META_COLAB_SEMANA = 8 * 3600;
 const META_EFETIVO_MES = 64 * 3600;
 const META_COLAB_MES = 32 * 3600;
 
-// --- UTILIDADES ---
-const fmtHMS = (s) => { const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sc=Math.floor(s%60); return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sc).padStart(2,'0')}`; };
+const fmtHMS = (s) => `${String(Math.floor(s/3600)).padStart(2,'0')}:${String(Math.floor((s%3600)/60)).padStart(2,'0')}:${String(Math.floor(s%60)).padStart(2,'0')}`;
 const fmtHM = (s) => `${Math.floor(s/3600)}h${String(Math.floor((s%3600)/60)).padStart(2,'0')}`;
 const startOfWeek = (d) => { const x=new Date(d); x.setHours(0,0,0,0); x.setDate(x.getDate() - x.getDay()); return x; };
 const startOfMonth = (d) => { const x=new Date(d.getFullYear(), d.getMonth(), 1); x.setHours(0,0,0,0); return x; };
@@ -172,11 +113,10 @@ function compressImage(file, callback) {
     const img = new Image();
     img.onload = () => {
       const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
       const size = Math.min(img.width, img.height, 400); 
       canvas.width = size; canvas.height = size;
-      const offsetX = (img.width - size) / 2; const offsetY = (img.height - size) / 2;
-      ctx.drawImage(img, offsetX, offsetY, size, size, 0, 0, size, size);
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, (img.width-size)/2, (img.height-size)/2, size, size, 0, 0, size, size);
       callback(canvas.toDataURL("image/jpeg", 0.6)); 
     };
     img.src = e.target.result;
@@ -184,7 +124,6 @@ function compressImage(file, callback) {
   reader.readAsDataURL(file);
 }
 
-// --- ÍCONES SVG ---
 const Icons = {
   Clock: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
   List: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>,
@@ -194,166 +133,17 @@ const Icons = {
   Trash: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>,
   Sun: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>,
   Moon: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>,
-  Send: () => <svg width="20" height="20" viewBox="0 0 24 24"```html
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Onda Elétrica · Ponto</title>
+  Send: () => <svg width="20" height="O erro na imagem revela exatamente o que aconteceu: **um erro de copiar e colar.** 
 
-<meta name="mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<link rel="manifest" href="manifest.json" />
+Se você olhar a linha vermelha no seu print (`Unexpected token`), vai ver que tem a palavra ` ```html ` e o começo de um novo `<!DOCTYPE html>` perdidos bem no meio do código do ícone `Send`. Isso significa que, na hora de copiar da minha resposta anterior, você acabou copiando a formatação de texto do chat (os acentos graves que formam os blocos de código) e colou tudo misturado dentro do arquivo. Isso "quebrou" a leitura do navegador, causando todos esses erros vermelhos.
 
-<link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
-<link href="[https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap](https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap)" rel="stylesheet">
+Para resolver isso e ter o app definitivo rodando com **Login do Google, todas as novas funções e a correção do Babel**, vamos fazer uma limpa total.
 
-<style>
-  :root {
-    --bg: #0F1B2D;
-    --surface: #16233A;
-    --surface-2: #1D2C47;
-    --line: rgba(234,240,246,0.08);
-    --accent: #F2B705; 
-    --accent-soft: rgba(242,183,5,0.14);
-    --live: #3FD8C4;
-    --warn: #E4572E;
-    --text: #EAF0F6;
-    --text-muted: #8FA0BC;
-    --modal-bg: rgba(15, 27, 45, 0.85);
-  }
+Siga estes passos com muita atenção:
 
-  .theme-light {
-    --bg: #F4F7F9;
-    --surface: #FFFFFF;
-    --surface-2: #E8EEF2;
-    --line: rgba(15, 27, 45, 0.1);
-    --accent: #F2B705; 
-    --accent-soft: rgba(242,183,5,0.25);
-    --live: #00BFA5;
-    --warn: #D32F2F;
-    --text: #0F1B2D;
-    --text-muted: #5C6E8A;
-    --modal-bg: rgba(244, 247, 249, 0.85);
-  }
+1. Vá no seu repositório no GitHub e edite o arquivo `index.html`.
+2. Clique dentro da caixa de código, aperte **`Ctrl + A`** para selecionar absolutamente tudo e apague. O arquivo deve ficar **100% em branco**.
+3. No bloco de código abaixo, clique no botão **"Copy code"** (Copiar código) que aparece no canto superior direito do bloco aqui no chat. *Não selecione o texto com o mouse para evitar copiar formatação junto.*
+4. Cole o código no GitHub e clique em **Commit changes**.
 
-  * { box-sizing: border-box; }
-  html, body { height: 100%; }
-  body {
-    margin: 0; background: var(--bg); color: var(--text);
-    font-family: 'Space Grotesk', system-ui, sans-serif;
-    -webkit-font-smoothing: antialiased; overscroll-behavior: none;
-    transition: background 0.3s, color 0.3s;
-  }
-  .mono { font-family: 'JetBrains Mono', monospace; }
-  #root { min-height: 100vh; display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; position: relative; }
-  
-  ::selection { background: var(--accent-soft); }
-  button, input, select { font-family: inherit; }
-  input, select { 
-    width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line);
-    background: var(--surface); color: var(--text); font-size: 16px; outline: none; margin-bottom: 12px;
-  }
-  input[type="checkbox"] { width: auto; margin-right: 8px; transform: scale(1.2); }
-  
-  .btn {
-    width: 100%; padding: 14px 16px; border-radius: 12px; border: none;
-    background: var(--surface-2); color: var(--text); font-size: 15px; font-weight: 600; cursor: pointer;
-    transition: background .15s; display: flex; align-items: center; justify-content: center; gap: 8px;
-  }
-  .btn-primary { background: var(--accent); color: #1A1300; }
-  .btn-danger { background: var(--warn); color: white; }
-  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-  .fade-in { animation: fadeIn .35s ease both; }
-  @keyframes fadeIn { from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:translateY(0)} }
-  
-  .modal-overlay {
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 100;
-    background: var(--modal-bg); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; padding: 20px;
-    animation: fadeIn .2s ease;
-  }
-  .modal-content {
-    background: var(--bg); border: 1px solid var(--line); border-radius: 20px;
-    padding: 24px; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; box-shadow: 0 12px 32px rgba(0,0,0,0.2);
-  }
-
-  .avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; background: var(--surface-2); display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
-  .avatar-lg { width: 80px; height: 80px; font-size: 24px; }
-  
-  .toast-in { animation: toastIn .4s cubic-bezier(.2,.9,.3,1) both; }
-  @keyframes toastIn { from{opacity:0; transform:translateY(-20px) scale(.95)} to{opacity:1; transform:translateY(0) scale(1)} }
-  
-  .scrollbar-none::-webkit-scrollbar { display: none; }
-  .bottom-nav { border-top: 1px solid var(--line); background: var(--surface-2); padding-bottom: env(safe-area-inset-bottom); display: flex; }
-  .bottom-nav button { flex: 1; padding: 12px 0; background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 11px; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-  .bottom-nav button.active { color: var(--accent); }
-  
-  .chat-bubble { padding: 10px 14px; border-radius: 16px; font-size: 14.5px; max-width: 85%; word-wrap: break-word; line-height: 1.4; }
-  .chat-mine { background: var(--accent-soft); border-bottom-right-radius: 4px; align-self: flex-end; }
-  .chat-other { background: var(--surface-2); border-bottom-left-radius: 4px; align-self: flex-start; }
-</style>
-</head>
-<body>
-<div id="root"></div>
-
-<!-- Firebase Modular (Formato Limpo Nativo) -->
-<script type="module">
-  import { initializeApp } from "[https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js](https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js)";
-  import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "[https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js](https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js)";
-  import { getFirestore, collection, addDoc, updateDoc, doc, setDoc, getDoc, onSnapshot, query, orderBy, limit, serverTimestamp, where, deleteDoc } from "[https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js](https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js)";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyCGaXoU3iXHgR2uX31bIuE43CFGkY4YaRc",
-    authDomain: "ponto-onda-eletrica.firebaseapp.com",
-    projectId: "ponto-onda-eletrica",
-    storageBucket: "ponto-onda-eletrica.firebasestorage.app",
-    messagingSenderId: "276041404701",
-    appId: "1:276041404701:web:35951f8f473c2c182b91f4"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-
-  window.fb = {
-    auth, db, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged,
-    collection, addDoc, updateDoc, doc, setDoc, getDoc, deleteDoc,
-    onSnapshot, query, orderBy, limit, serverTimestamp, where
-  };
-  window.dispatchEvent(new Event("fb-ready"));
-</script>
-
-<!-- React sem build (UMD) e Babel -->
-<script src="[https://unpkg.com/react@18/umd/react.production.min.js](https://unpkg.com/react@18/umd/react.production.min.js)"></script>
-<script src="[https://unpkg.com/react-dom@18/umd/react-dom.production.min.js](https://unpkg.com/react-dom@18/umd/react-dom.production.min.js)"></script>
-<script src="[https://unpkg.com/@babel/standalone@7.23.6/babel.min.js](https://unpkg.com/@babel/standalone@7.23.6/babel.min.js)"></script>
-
-<!-- TRAVA DE SEGURANÇA DO BABEL: Força uso do React Clássico para não gerar erros de import -->
-<script>
-  if (window.Babel) {
-    window.Babel.registerPreset('react-classico', {
-      presets: [
-        [window.Babel.availablePresets['react'], { "runtime": "classic" }]
-      ]
-    });
-  }
-</script>
-
-<!-- O aplicativo usa o preset 'react-classico' configurado acima -->
-<script type="text/babel" data-presets="react-classico">
-/** @jsx React.createElement */
-/** @jsxFrag React.Fragment */
-const { useState, useEffect, useRef, useMemo, useCallback } = React;
-
-const DOMINIO_PERMITIDO = "@ufba.br"; 
-
-const GESTOES = ["Gestão de Pessoas", "Gestão de Finanças", "Gestão de Marketing & Comunicação", "Gestão de Projetos", "Gestão de Extensão"];
-const META_EFETIVO_SEMANA = 16 * 3600; 
-const META_COLAB_SEMANA = 8 * 3600;
-const META_EFETIVO_MES = 64 * 3600;
-const META_COLAB_MES = 32 * 3600;
-
-const fmtHMS = (s) => { const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sc=Math.floor
+Aqui está o código final, perfeito e unificado:
